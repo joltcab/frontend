@@ -1,0 +1,181 @@
+8a5208f chore: Add sensitive files to gitignore
+b76b64c chore: Add sensitive files to gitignore
+35fc46e chore: Remove MongoDB exports with secrets from repository
+3eb8f80 Add feature to manage and display project metadata
+e05dd19 Add feature to manage and display project metadata
+8d98402 Add instructions for committing frontend and backend separately
+7a23d23 Add instructions for committing frontend and backend separately
+53c2f3b Add instructions to separate frontend and backend projects
+27109a4 Add instructions to separate frontend and backend projects
+5bdd279 Add new user authentication and authorization system
+cfbcd56 Add new user authentication and authorization system
+29803c1 Improve dashboard and support ticket data handling and display
+cf1bf77 Improve dashboard and support ticket data handling and display
+9c3a3df Add initial project files and configuration
+723e004 Add initial project files and configuration
+af8d564 Improve referral history and promo management features
+67bccf0 Improve referral history and promo management features
+aeb3c03 Add a secure login system for user accounts
+c9e8b66 Add a secure login system for user accounts
+458b7ee Update earnings and transaction data fetching logic
+56ac8ed Update earnings and transaction data fetching logic
+291f7e2 Add new styling for the application's primary navigation bar
+55c9fe5 Add new styling for the application's primary navigation bar
+fb32be9 Update service management pages to fetch and display real data
+ced6f2c Update service management pages to fetch and display real data
+d86bc23 Add a secure login system to enable users to access their personal accounts safely
+f62cb57 Add a secure login system to enable users to access their personal accounts safely
+1a93115 Replace mock data with actual trip data fetching for dashboard views
+e470f95 Replace mock data with actual trip data fetching for dashboard views
+3f29d0e Add support for new payment methods to streamline checkout
+2156d02 Add support for new payment methods to streamline checkout
+45207d4 Update service imports to use dashboard service instead of admin service
+5bca23d Update service imports to use dashboard service instead of admin service
+f1eee88 Update website to correctly display user order history and details
+9804120 Update website to correctly display user order history and details
+dc6def5 Add new management pages for hotels, partners, and dispatchers
+78ea05a Add new management pages for hotels, partners, and dispatchers
+c0eda8f Add new admin functionalities for managing corporate accounts and data
+e305097 Add new admin functionalities for managing corporate accounts and data
+33ca1af Add 148 API endpoints and clean up legacy code
+a62bbdd Add 148 API endpoints and clean up legacy code
+a654c8d Add comprehensive API routes for managing system entities
+ec7242f Add comprehensive API routes for managing system entities
+e0b2e6c Document all API routes for the backend system
+aea280d Document all API routes for the backend system
+d3eba64 Add numerous new data models and update existing ones
+122991c Add numerous new data models and update existing ones
+b615aa6 Export all MongoDB collections to JSON files
+8520919 Export all MongoDB collections to JSON files
+87bb520 Add numerous configuration settings for various services
+2a72a84 Add numerous configuration settings for various services
+cad889a Add configuration settings for various app services and platforms
+769b13b Add configuration settings for various app services and platforms
+330823f Separate backend and frontend into distinct repositories
+e276d3e Separate backend and frontend into distinct repositories
+44b79c9 Improve security by restricting cross-origin requests
+26bf385 Improve security by restricting cross-origin requests
+bf76e7e Add an administrator login system to authenticate users securely
+fdc191c Add an administrator login system to authenticate users securely
+d3eb529 Improve admin login functionality to redirect to admin dashboard
+a835d23 Improve admin login functionality to redirect to admin dashboard
+3f81ec9 Add static file serving for various assets and update project description
+572ed70 Add static file serving for various assets and update project description
+46322f5 Complete testing and validation for file uploads and user authentication
+2614dc1 Complete testing and validation for file uploads and user authentication
+5ae00e3 Improve the way the system handles user sign-up requests
+4e9bdb2 Improve the way the system handles user sign-up requests
+adcba1c Enable image uploads for service types with robust error handling
+6fcbae9 Enable image uploads for service types with robust error handling
+090dd5c Add image uploads and new fields for service types
+aab8fb1 Add image uploads and new fields for service types
+d55365e Add detailed zone and city configuration options
+2be6145 Add detailed zone and city configuration options
+21538fb Enhance service type management and city-specific configurations
+1c87c15 Enhance service type management and city-specific configurations
+6bc7e28 Ensure user registration and login processes utilize the database correctly
+e3f26a8 Ensure user registration and login processes utilize the database correctly
+437cd0c Integrate database with all backend routes and models
+6a5170e Integrate database with all backend routes and models
+68e5638 Integrate database functionality across the application
+c6f19c0 Integrate database functionality across the application
+62db236 Integrate database models for core application functionalities
+62a1f56 Integrate database models for core application functionalities
+ae1feea Organize and expand admin dashboard with new pages and navigation
+0d990a6 Organize and expand admin dashboard with new pages and navigation
+242ea78 Add user financial transaction history and earning details
+344c55e Add user financial transaction history and earning details
+933e72d Enhance admin dashboard with new navigation and comprehensive data management features
+f62fc1a Enhance admin dashboard with new navigation and comprehensive data management features
+b1f43ba Improve dashboard features with data fetching and UI enhancements
+439de07 Improve dashboard features with data fetching and UI enhancements
+6c471db Add ability to view driver details on the dashboard page
+e4e0feb Add ability to view driver details on the dashboard page
+8cbf1a4 Notes added by 'git notes add'
+edd6b21 Add advanced driver detail modals with tabbed navigation
+8e45ea8 Add advanced driver detail modals with tabbed navigation
+81fe3f0 Add navigation breadcrumbs to improve user experience
+8601604 Add navigation breadcrumbs to improve user experience
+214e3c1 Improve navigation and add provider management features
+3f888e3 Improve navigation and add provider management features
+b3b1739 Enhance dashboard navigation and management features with new icons and functionalities
+9ce4487 Enhance dashboard navigation and management features with new icons and functionalities
+b8ba7c5 Modernize admin dashboard with a new design system and UI components
+c7554a8 Modernize admin dashboard with a new design system and UI components
+a145046 Enhance dashboard and settings pages with new UI components and data
+fd5c76c Enhance dashboard and settings pages with new UI components and data
+7b11da2 Update dashboard routes to use the new admin prefix
+8266088 Update dashboard routes to use the new admin prefix
+9fa81e7 Configure Vite to build the application and set up aliases
+de77def Configure Vite to build the application and set up aliases
+9c69700 Update project configuration to use Vite as the build framework
+823b0d2 Update project configuration to use Vite as the build framework
+b348c01 Update the main application routes from /dashboard to /admin
+52ebfd2 Update the main application routes from /dashboard to /admin
+47cfebd Update admin routes to use a unified path for better organization
+881237a Update admin routes to use a unified path for better organization
+276de3c Add an option to receive email notifications about important account updates
+e15cf56 Add an option to receive email notifications about important account updates
+ccc8f6c Add feature for users to track their personal fitness progress
+535dc8e Add feature for users to track their personal fitness progress
+9944e47 Update admin service to improve data fetching for dashboard stats
+5024547 Update admin service to improve data fetching for dashboard stats
+d9db9ee Update platform overview and system architecture documentation
+ed38b79 Update platform overview and system architecture documentation
+48a6f63 Add administrative settings for various platform configurations and management
+2f617d6 Add administrative settings for various platform configurations and management
+966a2db Add new financial and communication features to the dashboard
+644d062 Add new financial and communication features to the dashboard
+280b28a Add live map functionality and trip earning details for drivers
+ce63da8 Add live map functionality and trip earning details for drivers
+10a7d1c Add comprehensive provider and vehicle management features
+3267b3b Add comprehensive provider and vehicle management features
+fb8bde3 Expand admin dashboard navigation and add provider editing functionality
+0dac196 Expand admin dashboard navigation and add provider editing functionality
+251e8ba Add several new sections to the admin dashboard for enhanced user and financial management
+ce70304 Add several new sections to the admin dashboard for enhanced user and financial management
+55a96fb Prevent errors when displaying dashboard statistics by providing default values
+fce6576 Prevent errors when displaying dashboard statistics by providing default values
+8cc187f Add translation for Spanish language option to the settings
+d195122 Add translation for Spanish language option to the settings
+1726cc4 Update project structure to organize backend and frontend views
+16df7ad Update project structure to organize backend and frontend views
+d90417c Update the system to improve user data management and access controls
+cb5d506 Update the system to improve user data management and access controls
+753b18a Add more detailed admin pages for managing various platform features
+8306ea1 Add more detailed admin pages for managing various platform features
+ec38db3 Add new sections to the admin dashboard for enhanced management
+7c0ab9e Add new sections to the admin dashboard for enhanced management
+a11e512 Add comprehensive administrative tools for managing various platform resources
+9f8f605 Add comprehensive administrative tools for managing various platform resources
+604670e Enhance dashboard navigation and add new management pages for various features
+8a0fc59 Enhance dashboard navigation and add new management pages for various features
+497f00a Add a new way for users to safely log in to their accounts
+d06802d Add a new way for users to safely log in to their accounts
+2c1fcd5 Introduce a dedicated dashboard section for admin functionality
+bda3668 Introduce a dedicated dashboard section for admin functionality
+7c2ca0f Implement dedicated admin login and access control
+8091909 Implement dedicated admin login and access control
+9ac9b00 Restructure application to separate frontend and backend services
+d2f168a Restructure application to separate frontend and backend services
+2da85eb Add detailed Vercel deployment guide and update backup references
+bf35527 Add detailed Vercel deployment guide and update backup references
+9e39043 Update user authentication to support passwordless login via email
+b63a115 Update user authentication to support passwordless login via email
+850a01f Add backend API for ride-sharing service with authentication and user management
+6a2a904 Add backend API for ride-sharing service with authentication and user management
+1c7f0f6 Update user profile and trip viewing functionality
+1595b0d Update user profile and trip viewing functionality
+bc5799a Improve the way the application handles various types of user input
+8fdcda9 Improve the way the application handles various types of user input
+78566a5 Update admin pages to fetch data from the backend API
+304599d Update admin pages to fetch data from the backend API
+dc79f53 Add project overview and technical details for ride-sharing frontend
+e065145 Add project overview and technical details for ride-sharing frontend
+a734d38 Add backend models and reference data for application functionality
+9d8ec71 Add backend models and reference data for application functionality
+315e67f Add all missing route pages for User and Admin dashboards
+028730d Initial commit - JoltCab Frontend (React + Vite)
+f760de5 Update setup instructions for deploying backend and frontend to GitHub
+922fca8 Update setup instructions for deploying backend and frontend to GitHub
+eeef9ad Initial commit - JoltCab Backend API
