@@ -1,10 +1,12 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Calendar, Users, Wallet } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DriverSection({ t }) {
+  const navigate = useNavigate();
   const benefitIcons = [TrendingUp, Calendar, Users, Wallet];
 
   return (
@@ -86,7 +88,7 @@ export default function DriverSection({ t }) {
             <Button
               size="lg"
               className="rounded-full bg-gray-900 hover:bg-gray-800 text-white px-10 shadow-lg"
-              onClick={() => alert("Driver registration form coming soon")}
+              onClick={() => navigate('/DriverRegister')}
             >
               {t.cta}
             </Button>

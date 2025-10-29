@@ -1,10 +1,12 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Briefcase, FileText, BarChart3, HeadphonesIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function BusinessSection({ t }) {
+  const navigate = useNavigate();
   const benefitIcons = [Briefcase, FileText, BarChart3, HeadphonesIcon];
 
   return (
@@ -59,7 +61,7 @@ export default function BusinessSection({ t }) {
             <Button
               size="lg"
               className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-10 shadow-lg"
-              onClick={() => alert("Corporate registration form coming soon")}
+              onClick={() => navigate('/CorporateRegister')}
             >
               {t.cta}
             </Button>

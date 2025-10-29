@@ -140,6 +140,8 @@ import RepositoryReadme from "./RepositoryReadme";
 
 import GoogleCallback from "./GoogleCallback";
 
+import BackendDashboardLogin from "./BackendDashboardLogin";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -281,6 +283,8 @@ const PAGES = {
     MigrationHub: MigrationHub,
     
     RepositoryReadme: RepositoryReadme,
+    
+    BackendDashboardLogin: BackendDashboardLogin,
     
 }
 
@@ -448,6 +452,8 @@ function PagesContent() {
                 <Route path="/RepositoryReadme" element={<RepositoryReadme />} />
                 
                 <Route path="/auth/google/callback" element={<GoogleCallback />} />
+                
+                <Route path="/BackendDashboard" element={<BackendDashboardLogin />} />
                 
             </Routes>
         </Layout>

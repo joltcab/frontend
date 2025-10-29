@@ -1,10 +1,12 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Hotel, Users, Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function HotelSection({ t }) {
+  const navigate = useNavigate();
   const benefitIcons = [Hotel, Users, Star, Zap];
 
   return (
@@ -88,7 +90,7 @@ export default function HotelSection({ t }) {
             <Button
               size="lg"
               className="rounded-full bg-orange-600 hover:bg-orange-700 text-white px-10 shadow-lg"
-              onClick={() => alert("Hotel registration form coming soon")}
+              onClick={() => navigate('/HotelRegister')}
             >
               {t.cta}
             </Button>

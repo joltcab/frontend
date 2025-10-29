@@ -94,6 +94,57 @@ class JoltCabAPI {
         body: JSON.stringify({ token, password }),
       });
     },
+
+    // Google OAuth
+    googleLogin: (redirectUri, role = 'user') => {
+      const url = `${this.baseURL}/auth/google?redirect_uri=${encodeURIComponent(redirectUri)}&role=${role}`;
+      window.location.href = url;
+    },
+
+    googleCallback: async (code, state) => {
+      const response = await this.request('/auth/google/callback', {
+        method: 'POST',
+        body: JSON.stringify({ code, state }),
+      });
+      if (response.success && response.data?.token) {
+        this.setToken(response.data.token);
+      }
+      return response;
+    },
+
+    // Apple OAuth
+    appleLogin: (redirectUri, role = 'user') => {
+      const url = `${this.baseURL}/auth/apple?redirect_uri=${encodeURIComponent(redirectUri)}&role=${role}`;
+      window.location.href = url;
+    },
+
+    appleCallback: async (code, state) => {
+      const response = await this.request('/auth/apple/callback', {
+        method: 'POST',
+        body: JSON.stringify({ code, state }),
+      });
+      if (response.success && response.data?.token) {
+        this.setToken(response.data.token);
+      }
+      return response;
+    },
+
+    // Facebook OAuth
+    facebookLogin: (redirectUri, role = 'user') => {
+      const url = `${this.baseURL}/auth/facebook?redirect_uri=${encodeURIComponent(redirectUri)}&role=${role}`;
+      window.location.href = url;
+    },
+
+    facebookCallback: async (code, state) => {
+      const response = await this.request('/auth/facebook/callback', {
+        method: 'POST',
+        body: JSON.stringify({ code, state }),
+      });
+      if (response.success && response.data?.token) {
+        this.setToken(response.data.token);
+      }
+      return response;
+    },
   };
 
   // ==================== ENTITIES ====================
@@ -512,6 +563,169 @@ class JoltCabAPI {
       return await this.request(`/blog/${id}/unpublish`, {
         method: 'PUT',
       });
+    },
+  };
+
+  // ==================== EMERGENT IA ENDPOINTS ====================
+  // Endpoints para las aplicaciones móviles y web de Emergent IA
+  emergentIA = {
+    // Chat con IA para pedir canciones (requiere autenticación)
+    chat: {
+      sendMessage: async (message, context = {}) => {
+        return await this.request('/emergent-ia/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message, context }),
+        });
+      },
+      getHistory: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        const response = await this.request(`/emergent-ia/chat/history?${query}`);
+        return response.data?.messages || [];
+      },
+      requestSong: async (songData) => {
+        return await this.request('/emergent-ia/chat/request-song', {
+          method: 'POST',
+          body: JSON.stringify(songData),
+        });
+      },
+    },
+
+    // Calendario de shows
+    shows: {
+      list: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        const response = await this.request(`/emergent-ia/shows?${query}`);
+        return response.data?.shows || [];
+      },
+      get: async (id) => {
+        const response = await this.request(`/emergent-ia/shows/${id}`);
+        return response.data?.show || response.data;
+      },
+      upcoming: async () => {
+        const response = await this.request('/emergent-ia/shows/upcoming');
+        return response.data?.shows || [];
+      },
+    },
+
+    // Eventos
+    events: {
+      list: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        const response = await this.request(`/emergent-ia/events?${query}`);
+        return response.data?.events || [];
+      },
+      get: async (id) => {
+        const response = await this.request(`/emergent-ia/events/${id}`);
+        return response.data?.event || response.data;
+      },
+      upcoming: async () => {
+        const response = await this.request('/emergent-ia/events/upcoming');
+        return response.data?.events || [];
+      },
+    },
+
+    // LocalNews con IA
+    localNews: {
+      list: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        const response = await this.request(`/emergent-ia/local-news?${query}`);
+        return response.data?.news || [];
+      },
+      get: async (id) => {
+        const response = await this.request(`/emergent-ia/local-news/${id}`);
+        return response.data?.news || response.data;
+      },
+      getByLocation: async (location) => {
+        const response = await this.request('/emergent-ia/local-news/by-location', {
+          method: 'POST',
+          body: JSON.stringify({ location }),
+        });
+        return response.data?.news || [];
+      },
+    },
+
+    // LastNews (últimas noticias)
+    lastNews: {
+      list: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        const response = await this.request(`/emergent-ia/last-news?${query}`);
+        return response.data?.news || [];
+      },
+      get: async (id) => {
+        const response = await this.request(`/emergent-ia/last-news/${id}`);
+        return response.data?.news || response.data;
+      },
+      latest: async (limit = 10) => {
+        const response = await this.request(`/emergent-ia/last-news/latest?limit=${limit}`);
+        return response.data?.news || [];
+      },
+    },
+
+    // Notificaciones
+    notifications: {
+      // Notificaciones de canciones
+      songs: {
+        list: async (params = {}) => {
+          const query = new URLSearchParams(params).toString();
+          const response = await this.request(`/emergent-ia/notifications/songs?${query}`);
+          return response.data?.notifications || [];
+        },
+        markAsRead: async (id) => {
+          return await this.request(`/emergent-ia/notifications/songs/${id}/read`, {
+            method: 'PUT',
+          });
+        },
+        subscribe: async (preferences) => {
+          return await this.request('/emergent-ia/notifications/songs/subscribe', {
+            method: 'POST',
+            body: JSON.stringify(preferences),
+          });
+        },
+      },
+      // Notificaciones de noticias
+      news: {
+        list: async (params = {}) => {
+          const query = new URLSearchParams(params).toString();
+          const response = await this.request(`/emergent-ia/notifications/news?${query}`);
+          return response.data?.notifications || [];
+        },
+        markAsRead: async (id) => {
+          return await this.request(`/emergent-ia/notifications/news/${id}/read`, {
+            method: 'PUT',
+          });
+        },
+        subscribe: async (preferences) => {
+          return await this.request('/emergent-ia/notifications/news/subscribe', {
+            method: 'POST',
+            body: JSON.stringify(preferences),
+          });
+        },
+      },
+      // Obtener todas las notificaciones
+      getAll: async (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        const response = await this.request(`/emergent-ia/notifications?${query}`);
+        return response.data?.notifications || [];
+      },
+      markAllAsRead: async () => {
+        return await this.request('/emergent-ia/notifications/read-all', {
+          method: 'PUT',
+        });
+      },
+    },
+
+    // Preferencias del usuario
+    preferences: {
+      get: async () => {
+        const response = await this.request('/emergent-ia/preferences');
+        return response.data?.preferences || {};
+      },
+      update: async (preferences) => {
+        return await this.request('/emergent-ia/preferences', {
+          method: 'PUT',
+          body: JSON.stringify(preferences),
+        });
+      },
     },
   };
 }

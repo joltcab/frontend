@@ -1,10 +1,12 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Radio, MapPin, Clock, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DispatcherSection({ t }) {
+  const navigate = useNavigate();
   const benefitIcons = [Radio, MapPin, Clock, DollarSign];
 
   return (
@@ -59,7 +61,7 @@ export default function DispatcherSection({ t }) {
             <Button
               size="lg"
               className="rounded-full bg-gray-900 hover:bg-gray-800 text-white px-10 shadow-lg"
-              onClick={() => alert("Dispatcher registration form coming soon")}
+              onClick={() => navigate('/DispatcherLogin')}
             >
               {t.cta}
             </Button>

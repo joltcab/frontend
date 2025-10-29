@@ -95,7 +95,7 @@ export default function AdminLogin() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setLoading(true);
     setMessage({ type: '', text: '' });
 
@@ -104,15 +104,11 @@ export default function AdminLogin() {
       
       // Configurar URL de callback
       const redirectUri = window.location.origin + '/auth/google/callback';
-      const backendUrl = import.meta.env.VITE_API_URL || 'https://admin.joltcab.com/api/v1';
       
-      // Construir URL de OAuth
-      const googleAuthUrl = `${backendUrl}/auth/google?redirect_uri=${encodeURIComponent(redirectUri)}&role=admin`;
+      console.log('🔗 Redirecting to Google OAuth with role: admin');
       
-      console.log('🔗 Redirecting to:', googleAuthUrl);
-      
-      // Redirigir a Google OAuth
-      window.location.href = googleAuthUrl;
+      // Usar el método de OAuth del API client
+      joltcab.auth.googleLogin(redirectUri, 'admin');
       
     } catch (error) {
       console.error('❌ Google login error:', error);
