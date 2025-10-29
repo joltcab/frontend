@@ -474,6 +474,46 @@ class JoltCabAPI {
       });
     },
   };
+
+  // Blog API
+  blog = {
+    list: async (params = {}) => {
+      const query = new URLSearchParams(params).toString();
+      const response = await this.request(`/blog?${query}`);
+      return response.data?.posts || response.data || [];
+    },
+    get: async (id) => {
+      const response = await this.request(`/blog/${id}`);
+      return response.data?.post || response.data;
+    },
+    create: async (data) => {
+      return await this.request('/blog', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+    update: async (id, data) => {
+      return await this.request(`/blog/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    delete: async (id) => {
+      return await this.request(`/blog/${id}`, {
+        method: 'DELETE',
+      });
+    },
+    publish: async (id) => {
+      return await this.request(`/blog/${id}/publish`, {
+        method: 'PUT',
+      });
+    },
+    unpublish: async (id) => {
+      return await this.request(`/blog/${id}/unpublish`, {
+        method: 'PUT',
+      });
+    },
+  };
 }
 
 // Crear instancia global
