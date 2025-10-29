@@ -69,7 +69,8 @@ export default function Header({ language, setLanguage }) {
         { label: "For Dispatchers", href: "#dispatcher" }
       ]
     },
-    { label: "Coverage", href: "#coverage" }
+    { label: "Coverage", href: "#coverage" },
+    { label: "Blog", href: createPageUrl("Blog") }
   ];
 
   return (
