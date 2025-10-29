@@ -3,7 +3,7 @@
  * Sistema completo de API para JoltCab - Reemplaza completamente Base44
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://0ei9df5g.up.railway.app/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'https://admin.joltcab.com/api/v1';
 
 class JoltCabAPI {
   constructor() {
