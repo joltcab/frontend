@@ -1,0 +1,135 @@
+
+
+import React from "react";
+import Header from "@/components/landing/Header";
+import Footer from "@/components/landing/Footer";
+import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
+import PWAInstaller from "@/components/pwa/PWAInstaller";
+
+export default function Layout({ children, currentPageName }) {
+  console.log("🔍 LAYOUT - Current Page Name:", currentPageName);
+
+  // ========================================
+  // ⚠️ ADMIN PANEL - ABSOLUTAMENTE SIN HEADER/FOOTER
+  // ========================================
+  if (currentPageName === "AdminPanel" || 
+      currentPageName === "adminpanel" || 
+      currentPageName === "admin-panel" ||
+      window.location.pathname.includes("adminpanel")) {
+    console.log("✅ ✅ ✅ ADMIN PANEL DETECTED - NO HEADER/FOOTER ✅ ✅ ✅");
+    return (
+      <RealtimeProvider>
+        {children}
+        <PWAInstaller />
+      </RealtimeProvider>
+    );
+  }
+  
+  // ========================================
+  // Páginas SIN Header/Footer
+  // ========================================
+  const noHeaderFooterPages = [
+    // Auth pages
+    "PassengerAuth",
+    "DriverRegister", 
+    "CorporateRegister", 
+    "HotelRegister", 
+    "DispatcherRegister",
+    "DispatcherLogin",
+    "PartnerRegister",
+    "Register",
+    "TestAuth",
+    "Admin",
+    "UniversalLogin",
+    "UniversalSignUp",
+    "ForgotPassword",
+    "ResetPassword",
+    
+    // Dashboard pages
+    "UserDashboard",
+    "DriverDashboard",
+    "CorporateDashboard",
+    "HotelDashboard",
+    "DispatcherDashboard",
+    "PartnerDashboard",
+    "Profile",
+    "Wallet",
+    "Support",
+    "CompleteVerification",
+    "VerificationPending",
+    "RideHistory",
+    "RideDetail",
+    "PaymentMethods",
+    "TransactionHistory",
+    "NotificationSettings",
+    "DriverVerification",
+    "DriverEarnings",
+    "DriverPayments",
+    "VehicleManagement",
+    "VehicleDocuments",
+    "PartnerProviders",
+    "PartnerVehicles",
+    "PartnerEarnings",
+    "PartnerProfile",
+    "PartnerBankDetails",
+    "PartnerWallet",
+    "PartnerReferrals",
+    "CarRental",
+    "TrackRide",
+  ];
+
+  if (noHeaderFooterPages.includes(currentPageName)) {
+    return (
+      <RealtimeProvider>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+          {children}
+        </div>
+        <PWAInstaller />
+      </RealtimeProvider>
+    );
+  }
+
+  // ========================================
+  // Páginas CON Header/Footer (Home, Blog, Events, etc.)
+  // ========================================
+  const publicPages = [
+    "Home",
+    "Blog",
+    "BlogPost",
+    "Events",
+    "Event",
+    "Page",
+  ];
+
+  if (publicPages.includes(currentPageName)) {
+    console.log("🏠 Public page - WITH Header/Footer");
+    return (
+      <RealtimeProvider>
+        <div className="min-h-screen flex flex-col bg-white">
+          <Header language="en" setLanguage={() => {}} />
+          
+          <div className="flex-1 pt-16">
+            {children}
+          </div>
+          
+          <Footer language="en" />
+          <PWAInstaller />
+        </div>
+      </RealtimeProvider>
+    );
+  }
+
+  // ========================================
+  // DEFAULT: Sin Header/Footer para páginas no especificadas
+  // ========================================
+  console.log("⚠️ Unknown page - NO Header/Footer by default");
+  return (
+    <RealtimeProvider>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        {children}
+      </div>
+      <PWAInstaller />
+    </RealtimeProvider>
+  );
+}
+

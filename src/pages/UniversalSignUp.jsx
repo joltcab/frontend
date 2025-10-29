@@ -1,0 +1,367 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { createPageUrl } from "@/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Eye, EyeOff, Loader2, UserPlus, ArrowLeft, CheckCircle } from "lucide-react";
+
+export default function UniversalSignUp() {
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [success, setSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    full_name: "",
+    phone: "",
+    role: "user"
+  });
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        const dashboards = {
+          user: "UserDashboard",
+          driver: "DriverDashboard",
+          corporate: "CorporateDashboard",
+          hotel: "HotelDashboard",
+          dispatcher: "DispatcherDashboard",
+          partner: "PartnerDashboard",
+          admin: "AdminPanel"
+        };
+        window.location.href = createPageUrl(dashboards[user.role] || "UserDashboard");
+      }
+    } catch (error) {
+      // Not logged in, continue
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    
+    // Validations
+    if (!formData.email || !formData.password || !formData.full_name || !formData.phone) {
+      setMessage({ type: 'error', text: 'Please fill in all required fields' });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setMessage({ type: 'error', text: 'Please enter a valid email address' });
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage({ type: 'error', text: 'Passwords do not match' });
+      return;
+    }
+
+    setLoading(true);
+    setMessage({ type: '', text: '' });
+
+    try {
+      console.log('🚀 Starting registration for:', formData.email);
+
+      // 1. Registrar con base44.auth.register
+      await base44.auth.register(formData.email, formData.password);
+      
+      console.log('✅ Base44 registration successful');
+
+      // 2. Login automático después del registro
+      await base44.auth.login(formData.email, formData.password);
+      
+      console.log('✅ Auto-login successful');
+
+      // 3. Actualizar el perfil del usuario con los datos adicionales
+      await base44.auth.updateMe({
+        full_name: formData.full_name,
+        phone: formData.phone,
+        role: formData.role,
+        status: 'pending'
+      });
+
+      console.log('✅ User profile updated');
+
+      setSuccess(true);
+      setMessage({ 
+        type: 'success', 
+        text: '✅ Account created successfully! Redirecting...' 
+      });
+
+      // Redirigir después de 2 segundos
+      setTimeout(() => {
+        if (formData.role === 'user') {
+          window.location.href = createPageUrl("UserDashboard");
+        } else if (formData.role === 'driver') {
+          window.location.href = createPageUrl("CompleteVerification");
+        } else if (formData.role === 'dispatcher') {
+          window.location.href = createPageUrl("DispatcherDashboard");
+        } else if (formData.role === 'corporate') {
+          window.location.href = createPageUrl("CorporateDashboard");
+        } else if (formData.role === 'hotel') {
+          window.location.href = createPageUrl("HotelDashboard");
+        } else if (formData.role === 'partner') {
+          window.location.href = createPageUrl("PartnerDashboard");
+        } else {
+          window.location.href = createPageUrl("UserDashboard");
+        }
+      }, 2000);
+
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      
+      let errorMsg = 'Registration failed. Please try again.';
+      
+      if (error.message.includes('already registered') || error.message.includes('already exists')) {
+        errorMsg = '❌ This email is already registered. Try logging in instead.';
+      } else if (error.message.includes('Invalid email')) {
+        errorMsg = '❌ Invalid email format';
+      } else if (error.message.includes('Password')) {
+        errorMsg = '❌ Password must be at least 6 characters';
+      }
+      
+      setMessage({ 
+        type: 'error', 
+        text: errorMsg
+      });
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl">
+          <CardContent className="pt-12 pb-8 text-center">
+            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Account Created Successfully!
+            </h2>
+            
+            <p className="text-gray-600 mb-8">
+              Your JoltCab account has been created.<br />
+              Redirecting to your dashboard...
+            </p>
+
+            <Loader2 className="w-8 h-8 animate-spin text-[#15B46A] mx-auto" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => window.location.href = createPageUrl("UniversalLogin")}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Login
+        </Button>
+
+        <Card className="shadow-2xl">
+          <CardHeader className="text-center pb-6">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#15B46A] to-[#0F9456] rounded-full flex items-center justify-center mb-4">
+              <UserPlus className="w-8 h-8 text-white" />
+            </div>
+            <CardTitle className="text-3xl font-bold text-gray-900">
+              Create Account
+            </CardTitle>
+            <p className="text-gray-600 mt-2">Join JoltCab today</p>
+          </CardHeader>
+
+          <CardContent>
+            {message.text && (
+              <Alert className={`mb-6 ${
+                message.type === 'success' 
+                  ? 'bg-green-50 border-green-200 text-green-800' 
+                  : 'bg-red-50 border-red-200 text-red-800'
+              }`}>
+                <AlertDescription>{message.text}</AlertDescription>
+              </Alert>
+            )}
+
+            <form onSubmit={handleSignUp} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="role">I want to sign up as</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => setFormData({...formData, role: value})}
+                  disabled={loading}
+                >
+                  <SelectTrigger className="text-lg py-6">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">👤 Passenger</SelectItem>
+                    <SelectItem value="driver">🚗 Driver</SelectItem>
+                    <SelectItem value="corporate">💼 Corporate</SelectItem>
+                    <SelectItem value="hotel">🏨 Hotel</SelectItem>
+                    <SelectItem value="dispatcher">📻 Dispatcher</SelectItem>
+                    <SelectItem value="partner">🤝 Partner (Fleet Owner)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Full Name *</Label>
+                <Input
+                  id="full_name"
+                  type="text"
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                  placeholder="John Doe"
+                  required
+                  disabled={loading}
+                  className="text-lg py-6"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  placeholder="your@email.com"
+                  required
+                  disabled={loading}
+                  className="text-lg py-6"
+                  autoComplete="username"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  placeholder="+1234567890"
+                  required
+                  disabled={loading}
+                  className="text-lg py-6"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password *</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    placeholder="Minimum 6 characters"
+                    required
+                    disabled={loading}
+                    className="text-lg py-6 pr-11"
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                    disabled={loading}
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                    placeholder="Re-enter password"
+                    required
+                    disabled={loading}
+                    className="text-lg py-6 pr-11"
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                    disabled={loading}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full bg-gradient-to-r from-[#15B46A] to-[#0F9456] hover:from-[#0F9456] hover:to-[#15B46A] text-white font-semibold shadow-lg py-6 text-lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    Create Account
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-gray-600">
+                Already have an account?{" "}
+                <a 
+                  href={createPageUrl("UniversalLogin")} 
+                  className="text-[#15B46A] hover:text-[#0F9456] font-semibold"
+                >
+                  Sign In
+                </a>
+              </p>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-xs text-gray-500 text-center">
+                By creating an account, you agree to JoltCab's{" "}
+                <a href="#" className="text-[#15B46A] hover:underline">Terms of Service</a>
+                {" "}and{" "}
+                <a href="#" className="text-[#15B46A] hover:underline">Privacy Policy</a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
