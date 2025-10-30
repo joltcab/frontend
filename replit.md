@@ -33,6 +33,8 @@ Preferred communication style: Simple, everyday language.
 - `MONGODB_URI` - MongoDB connection string
 - `JWT_SECRET` - JWT signing secret
 - `VITE_API_URL` - Frontend API endpoint (overridden in workflow)
+- `GOOGLE_CLIENT_ID` - Google OAuth client ID for admin authentication
+- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret for admin authentication
 
 **Important**: The `VITE_API_URL` secret is overridden in the frontend workflow command to use `http://localhost:8000/api/v1` for local backend connection.
 
@@ -74,6 +76,12 @@ Preferred communication style: Simple, everyday language.
 - Token stored in localStorage
 - Authorization header pattern: `Bearer {token}`
 - Admin credentials: `admin@joltcab.com` / `@Odg4383@`
+- **Google OAuth** (October 30, 2025):
+  - Admin panel supports Google Sign-In
+  - OAuth flow: `/api/v1/auth/google` → Google consent → `/api/v1/auth/google/callback`
+  - Callback page: `src/pages/GoogleCallback.jsx`
+  - Admin role verification enforced
+  - Backend controller: `backend/src/controllers/oauth.controller.js`
 
 **Core API Modules**:
 1. **Authentication**: Login, registration, OAuth flows, password reset

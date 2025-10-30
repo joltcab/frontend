@@ -12,7 +12,13 @@ export const googleAuth = async (req, res) => {
     const { role, callback } = req.query;
     
     const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-    const GOOGLE_REDIRECT_URI = `${req.protocol}://${req.get('host')}/auth/google/callback`;
+    const GOOGLE_REDIRECT_URI = `${req.protocol}://${req.get('host')}/api/v1/auth/google/callback`;
+    
+    console.log('🔍 Environment check:', {
+      hasClientId: !!GOOGLE_CLIENT_ID,
+      hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri: GOOGLE_REDIRECT_URI
+    });
     
     if (!GOOGLE_CLIENT_ID) {
       return res.status(500).json({
