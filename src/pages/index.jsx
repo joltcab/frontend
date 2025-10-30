@@ -453,6 +453,8 @@ function PagesContent() {
                 
                 <Route path="/auth/google/callback" element={<GoogleCallback />} />
                 
+                <Route path="/GoogleCallback" element={<GoogleCallback />} />
+                
                 <Route path="/BackendDashboard" element={<BackendDashboardLogin />} />
                 
             </Routes>

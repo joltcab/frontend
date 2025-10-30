@@ -42,7 +42,7 @@ export default function GoogleCallback() {
       console.log('👤 User authenticated:', user);
 
       // Verificar que sea admin
-      if (user.role !== 'admin') {
+      if (user.user_type !== 1) {
         setStatus('error');
         setMessage('Access denied. Admin credentials required.');
         await joltcab.auth.logout();
