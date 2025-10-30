@@ -1,0 +1,32 @@
+git pull origin main --rebase
+git push -u origin main
+remote: Enumerating objects: 109, done.
+remote: Counting objects: 100% (109/109), done.
+remote: Compressing objects: 100% (72/72), done.
+remote: Total 109 (delta 35), reused 109 (delta 35), pack-reused 0 (from 0)
+Receiving objects: 100% (109/109), 60.81 KiB | 3.58 MiB/s, done.
+Resolving deltas: 100% (35/35), done.
+From https://github.com/joltcab/backend
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> origin/main
+Auto-merging src/config/socket.js
+CONFLICT (add/add): Merge conflict in src/config/socket.js
+Auto-merging src/routes/auth.routes.js
+CONFLICT (add/add): Merge conflict in src/routes/auth.routes.js
+Auto-merging src/server.js
+CONFLICT (add/add): Merge conflict in src/server.js
+error: could not apply e1db439... feat: Implementar Google OAuth para panel de administración
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply e1db439... feat: Implementar Google OAuth para panel de administración - Crear oauth.controller.js con flujo completo de Google OAuth 2.0 - Agregar rutas GET /api/v1/auth/google y /api/v1/auth/google/callback - Intercambiar código de autorización por tokens de acceso - Validar rol de administrador antes de autenticar usuarios - Generar JWT tokens para sesión del usuario autenticado - Integrar con Google OAuth usando GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET Archivos modificados: - src/controllers/oauth.controller.js (nuevo) - src/routes/auth.routes.js Estado: Funcionalidad completamente probada y funcionando
+To https://github.com/joltcab/backend.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/joltcab/backend.git'
+hint: Updates were rejected because a pushed branch tip is behind its remote
+hint: counterpart. If you want to integrate the remote changes, use 'git pull'
+hint: before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+~/workspace/backend$ 
