@@ -219,6 +219,26 @@ export default function CountryManagement() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      return await joltcab.countries.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['countries'] });
+      toast.success('Country deleted successfully');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to delete country');
+    },
+  });
+
+  const handleDelete = (country) => {
+    const countryName = country.countryname || country.name || 'this country';
+    if (window.confirm(`Are you sure you want to delete ${countryName}?`)) {
+      deleteMutation.mutate(country._id);
+    }
+  };
+
   // Cuando se selecciona un país del dropdown - MEJORADO
   const handleCountrySelect = (countryCode) => {
     console.log('🎯 Selected country code:', countryCode);
@@ -357,7 +377,7 @@ export default function CountryManagement() {
                             <div className="flex items-center gap-2">
                               <img 
                                 src={country.flag_url} 
-                                alt={country.countryname} 
+                                alt={country.countryname || country.name} 
                                 className="w-6 h-4 object-cover" 
                                 onError={(e) => {
                                   e.target.style.display = 'none';
@@ -508,7 +528,7 @@ export default function CountryManagement() {
                     {country.flag_url ? (
                       <img 
                         src={country.flag_url} 
-                        alt={country.countryname}
+                        alt={country.countryname || country.name}
                         style={{ border: 'none', borderRadius: '0px', height: '65px', margin: '0 auto' }}
                       />
                     ) : (
@@ -517,7 +537,7 @@ export default function CountryManagement() {
                       </div>
                     )}
                   </div>
-                  <div className="font-bold text-lg text-gray-900">{country.countryname}</div>
+                  <div className="font-bold text-lg text-gray-900">{country.countryname || country.name || 'Unknown'}</div>
                 </div>
 
                 <div className="px-4 pb-4">
@@ -556,7 +576,7 @@ export default function CountryManagement() {
                     </li>
                   </ul>
 
-                  <form className="text-center">
+                  <div className="flex gap-2 justify-center">
                     <Button
                       type="button"
                       className="bg-[#337ab7] hover:bg-[#286090] text-white"
@@ -568,7 +588,16 @@ export default function CountryManagement() {
                     >
                       Edit
                     </Button>
-                  </form>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        className="bg-[#d9534f] hover:bg-[#c9302c] text-white"
+                        style={{ width: '80px' }}
+                        onClick={() => handleDelete(country)}
+                      >
+                        Delete
+                      </Button>
+                  </div>
                 </div>
               </div>
             </div>
