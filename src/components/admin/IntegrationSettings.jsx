@@ -206,8 +206,8 @@ export default function IntegrationSettings() {
                   <p className="text-sm text-blue-700">Automatically falls back to Google Maps if Mapbox fails</p>
                 </div>
                 <Switch
-                  checked={getConfig('use_mapbox_primary')?.config_value === 'true'}
-                  onCheckedChange={(checked) => handleSaveConfig('use_mapbox_primary', checked.toString(), 'maps', 'Use Mapbox as primary mapping service')}
+                  checked={getConfig('use_mapbox_primary') === 'true' || getConfig('use_mapbox_primary') === true}
+                  onCheckedChange={(checked) => handleSaveConfig('use_mapbox_primary', checked.toString())}
                 />
               </div>
 

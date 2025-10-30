@@ -40,7 +40,7 @@ export function useDualMaps() {
     }
 
     // Intentar cargar Mapbox primero si está configurado y es primario
-    if (useMapboxPrimary && mapboxConfigured) {
+    if (mapboxConfigured && (settings.use_mapbox_primary == 'true' || settings.use_mapbox_primary === true) || !googleMapsConfigured) {
       loadMapbox(settings.mapbox_access_token);
     } 
     // Si Mapbox no está configurado o no es primario, usar Google Maps

@@ -23,7 +23,8 @@ export function RealtimeProvider({ children }) {
       if (!user) return;
 
       // Create WebSocket connection
-      const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/realtime`;
+      const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//admin.joltcab.com/api/realtime`;
+        console.log('🔌 Attempting WebSocket connection to:', wsUrl);
       const websocket = new WebSocket(wsUrl);
 
       websocket.onopen = () => {

@@ -32,18 +32,25 @@ class JoltCabAPI {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     try {
       const response = await fetch(url, {
         ...options,
         headers,
+        signal: controller.signal,
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Request failed');
-      }
-
+        if (!response.ok) {
+          const errorMessage = data.error || data.message || `HTTP ${response.status}: ${response.statusText}`;
+          console.error(`JoltCab API Error (${response.status}):`, errorMessage);
+          throw new Error(errorMessage);
+        }
+        
+        return data;
       return data;
     } catch (error) {
       console.error('JoltCab API Error:', error);
