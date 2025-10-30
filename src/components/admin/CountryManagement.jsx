@@ -383,7 +383,7 @@ export default function CountryManagement() {
                                   e.target.style.display = 'none';
                                 }}
                               />
-                              <span>{country.countryname}</span>
+                              <span>{country.name || country.countryname || 'Unknown'}</span>
                             </div>
                           </SelectItem>
                         ))}
