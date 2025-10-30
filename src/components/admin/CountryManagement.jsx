@@ -20,12 +20,57 @@ export default function CountryManagement() {
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [loadingWorldCountries, setLoadingWorldCountries] = useState(true);
   const [worldCountriesError, setWorldCountriesError] = useState(null);
+  const [formState, setFormState] = useState({
+    name: "",
+    flag_url: "",
+    currency: "",
+    currency_sign: "",
+    country_code: "",
+    business_status: false,
+    bonus_to_user: 150,
+    bonus_to_referral: 150,
+    referral_max_usage: 10,
+  });
   const queryClient = useQueryClient();
+
+  // Reset form to initial state
+  const resetForm = () => {
+    setFormState({
+      name: "",
+      flag_url: "",
+      currency: "",
+      currency_sign: "",
+      country_code: "",
+      business_status: false,
+      bonus_to_user: 150,
+      bonus_to_referral: 150,
+      referral_max_usage: 10,
+    });
+    setSelectedCountryCode("");
+  };
 
   // Cargar países del mundo al montar
   useEffect(() => {
     loadWorldCountries();
   }, []);
+
+  // Populate form when editing a country
+  useEffect(() => {
+    if (editingCountry) {
+      setFormState({
+        name: editingCountry.countryname || editingCountry.name || "",
+        flag_url: editingCountry.flag_url || "",
+        currency: editingCountry.currency || "",
+        currency_sign: editingCountry.currencysign || editingCountry.currency_sign || "",
+        country_code: editingCountry.countryphonecode || editingCountry.country_code || "",
+        business_status: editingCountry.isBusiness || false,
+        bonus_to_user: editingCountry.referral_bonus_to_user || 150,
+        bonus_to_referral: editingCountry.bonus_to_userreferral || 150,
+        referral_max_usage: editingCountry.userreferral || 10,
+      });
+      setSelectedCountryCode(editingCountry.alpha2 || "");
+    }
+  }, [editingCountry]);
 
   const loadWorldCountries = async () => {
     console.log('🌍 Starting to load world countries...');
@@ -195,7 +240,7 @@ export default function CountryManagement() {
       queryClient.invalidateQueries({ queryKey: ['countries'] });
       setIsDialogOpen(false);
       setEditingCountry(null);
-      setSelectedCountryCode("");
+      resetForm();
       toast.success('Country created successfully');
     },
     onError: (error) => {
@@ -212,7 +257,7 @@ export default function CountryManagement() {
       toast.success('Country updated successfully');
       setIsDialogOpen(false);
       setEditingCountry(null);
-      setSelectedCountryCode("");
+      resetForm();
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to update country');
@@ -239,73 +284,42 @@ export default function CountryManagement() {
     }
   };
 
-  // Cuando se selecciona un país del dropdown - MEJORADO
-  const handleCountrySelect = (countryCode) => {
-    console.log('🎯 Selected country code:', countryCode);
-    setSelectedCountryCode(countryCode);
-    const country = worldCountries.find(c => c.alpha2 === countryCode);
-    console.log('🎯 Found country:', country);
-    
-    if (country) {
-      // Esperar a que el DOM se actualice.
-      // Esto es necesario porque el Select de Shadcn/ui puede no renderizar
-      // los inputs inmediatamente después del cambio de estado,
-      // y accederlos con document.getElementById podría dar null.
-      setTimeout(() => {
-        const nameInput = document.getElementById('country_name');
-        const flagInput = document.getElementById('flag_url');
-        const currencyInput = document.getElementById('currency');
-        const signInput = document.getElementById('currency_sign');
-        const codeInput = document.getElementById('country_code');
-        
-        if (nameInput) {
-          nameInput.value = country.name;
-          // Trigger change event for react if it's not a controlled component
-          nameInput.dispatchEvent(new Event('input', { bubbles: true }));
-          console.log('✅ Set name:', country.name);
+     // Cuando se selecciona un país del dropdown - FIXED
+     const handleCountrySelect = (countryCode) => {
+       console.log("🎯 Selected country code:", countryCode);
+       setSelectedCountryCode(countryCode);
+       const country = worldCountries.find(c => c.alpha2 === countryCode);
+       console.log("🎯 Found country:", country);
+       
+       if (country) {
+         setFormState(prev => ({
+           ...prev,
+           name: country.name,
+           flag_url: country.flag_url,
+           currency: country.currency,
+           currency_sign: country.currency_sign,
+           country_code: country.country_code,
+         }));
+         console.log("✅ Form data updated:", country);
+     };
         }
-        if (flagInput) {
-          flagInput.value = country.flag_url;
-          flagInput.dispatchEvent(new Event('input', { bubbles: true }));
-          console.log('✅ Set flag:', country.flag_url);
-        }
-        if (currencyInput) {
-          currencyInput.value = country.currency;
-          currencyInput.dispatchEvent(new Event('input', { bubbles: true }));
-          console.log('✅ Set currency:', country.currency);
-        }
-        if (signInput) {
-          signInput.value = country.currency_sign;
-          signInput.dispatchEvent(new Event('input', { bubbles: true }));
-          console.log('✅ Set sign:', country.currency_sign);
-        }
-        if (codeInput) {
-          codeInput.value = country.country_code;
-          codeInput.dispatchEvent(new Event('input', { bubbles: true }));
-          console.log('✅ Set code:', country.country_code);
-        }
-      }, 100); // Small delay to ensure DOM is ready
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    // Map frontend fields to backend model fields
-    const data = {
-      countryname: formData.get('name'),
-      countrycode: formData.get('country_code')?.replace('+', '') || '',
+    const handleSubmit = (e) => {
+       e.preventDefault();
+       
+       // Map frontend formState to backend model fields
+       const data = {
+      countryname: formState.name,
+      countrycode: formState.country_code?.replace('+', '') || '',
       alpha2: selectedCountryCode || '',
-      currency: formData.get('currency'),
-      currencycode: formData.get('currency'),
-      currencysign: formData.get('currency_sign'),
-      countryphonecode: formData.get('country_code'),
-      flag_url: formData.get('flag_url') || '',
-      isBusiness: formData.get('business_status') === 'on',
-      referral_bonus_to_user: parseFloat(formData.get('bonus_to_user')) || 150,
-      bonus_to_userreferral: parseFloat(formData.get('bonus_to_referral')) || 150,
-      userreferral: parseInt(formData.get('referral_max_usage')) || 10,
+      currency: formState.currency,
+      currencycode: formState.currency,
+      currencysign: formState.currency_sign,
+      countryphonecode: formState.country_code,
+      flag_url: formState.flag_url || '',
+      isBusiness: formState.business_status,
+      referral_bonus_to_user: parseFloat(formState.bonus_to_user) || 150,
+      bonus_to_userreferral: parseFloat(formState.bonus_to_referral) || 150,
+      userreferral: parseInt(formState.referral_max_usage) || 10,
     };
 
     if (editingCountry) {
@@ -334,7 +348,7 @@ export default function CountryManagement() {
                 className="bg-[#5cb85c] hover:bg-[#4cae4c] text-white font-normal"
                 onClick={() => {
                   setEditingCountry(null);
-                  setSelectedCountryCode("");
+                  resetForm();
                 }}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -398,7 +412,8 @@ export default function CountryManagement() {
                     <Input
                       id="country_name"
                       name="name"
-                      defaultValue={editingCountry?.name}
+                      value={formState.name}
+                      onChange={(e) => setFormState(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="e.g., United States"
                       required
                     />
@@ -409,7 +424,8 @@ export default function CountryManagement() {
                     <Input
                       id="flag_url"
                       name="flag_url"
-                      defaultValue={editingCountry?.flag_url}
+                      value={formState.flag_url}
+                      onChange={(e) => setFormState(prev => ({ ...prev, flag_url: e.target.value }))}
                       placeholder="https://..."
                     />
                   </div>
@@ -419,7 +435,8 @@ export default function CountryManagement() {
                     <Input
                       id="currency"
                       name="currency"
-                      defaultValue={editingCountry?.currency}
+                      value={formState.currency}
+                      onChange={(e) => setFormState(prev => ({ ...prev, currency: e.target.value }))}
                       placeholder="e.g., USD"
                       required
                     />
@@ -430,7 +447,8 @@ export default function CountryManagement() {
                     <Input
                       id="currency_sign"
                       name="currency_sign"
-                      defaultValue={editingCountry?.currency_sign}
+                      value={formState.currency_sign}
+                      onChange={(e) => setFormState(prev => ({ ...prev, currency_sign: e.target.value }))}
                       placeholder="e.g., $"
                       required
                     />
@@ -441,7 +459,8 @@ export default function CountryManagement() {
                     <Input
                       id="country_code"
                       name="country_code"
-                      defaultValue={editingCountry?.country_code}
+                      value={formState.country_code}
+                      onChange={(e) => setFormState(prev => ({ ...prev, country_code: e.target.value }))}
                       placeholder="e.g., +1"
                       required
                     />
@@ -495,7 +514,7 @@ export default function CountryManagement() {
                     onClick={() => {
                       setIsDialogOpen(false);
                       setEditingCountry(null);
-                      setSelectedCountryCode("");
+                      resetForm();
                     }}
                   >
                     Cancel
