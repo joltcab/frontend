@@ -4,11 +4,37 @@
 
 JoltCab is a professional ride-hailing platform developed by iHOSTcast. It's a full-stack web application built with React and Vite that connects to a backend API for managing ride bookings, driver assignments, payments, and real-time location tracking. The platform includes AI-powered features for dynamic pricing, driver matching, and customer support through chatbots.
 
+**Deployment**: Migrated to Replit (October 30, 2025)
+- Frontend and backend running on Replit environment
+- Frontend: Port 5000 (webview)
+- Backend: Port 8000 (internal)
+- Local development with live backend connection
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
+
+### Replit Environment Setup
+
+**Workflows**:
+1. **dev** - Frontend development server
+   - Command: `VITE_API_URL=http://localhost:8000/api/v1 npm run dev`
+   - Port: 5000 (webview)
+   - Output: User-facing web interface
+
+2. **backend** - Node.js/Express API server
+   - Command: `cd backend && npm run dev`
+   - Port: 8000 (internal)
+   - Output: Console logs
+
+**Environment Variables** (Replit Secrets):
+- `MONGODB_URI` - MongoDB connection string
+- `JWT_SECRET` - JWT signing secret
+- `VITE_API_URL` - Frontend API endpoint (overridden in workflow)
+
+**Important**: The `VITE_API_URL` secret is overridden in the frontend workflow command to use `http://localhost:8000/api/v1` for local backend connection.
 
 ### Frontend Architecture
 
@@ -26,19 +52,21 @@ Preferred communication style: Simple, everyday language.
 - Component composition through Radix UI primitives
 
 **Build Configuration**:
-- Development server runs on port 5000 with host binding
+- Development server runs on port 5000 with host binding (0.0.0.0)
 - Production builds output to `dist` directory
-- Supports deployment to Vercel with SPA fallback routing
+- Vite configured to allow all hosts for Replit iframe compatibility
 
 ### Backend Integration
 
-**API Architecture**: RESTful API with dual endpoint support
-- Primary Production: `https://admin.joltcab.com/api/v1`
-- Railway Deployment: `https://0ei9df5g.up.railway.app/api/v1`
+**API Architecture**: RESTful Node.js/Express API
+- Replit Local: `http://localhost:8000/api/v1` (active)
+- Production Fallback: `https://admin.joltcab.com/api/v1`
+- Railway Fallback: `https://0ei9df5g.up.railway.app/api/v1`
 
-**API Client Strategy**: Custom implementation replacing Base44 SDK
+**API Client Strategy**: JoltCab API client replacing Base44 SDK
 - **Problem**: Application was initially built with Base44 SDK but requires direct backend integration
-- **Solution**: Created custom API clients (`api-client.js`, `joltcab-api.js`) that maintain SDK-like interface
+- **Solution**: Created unified JoltCab API client (`joltcab-api.js`) that maintains SDK-like interface
+- **Migration**: All references updated from `api-client.js` to `joltcab-api.js` (October 30, 2025)
 - **Benefit**: Clean migration path while preserving existing code structure
 
 **Authentication System**:

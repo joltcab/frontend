@@ -55,12 +55,19 @@ app.use(compression());
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000',
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
     // Permitir requests sin origin (mobile apps, Postman, etc)
     if (!origin) return callback(null, true);
+    
+    // Permitir todos los orígenes de Replit
+    if (origin && origin.includes('replit.dev')) {
+      return callback(null, true);
+    }
     
     if (allowedOrigins.includes(origin)) {
       callback(null, true);

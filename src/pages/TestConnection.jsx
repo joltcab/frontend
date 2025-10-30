@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import apiClient from '@/lib/api-client';
+import apiClient from '@/lib/joltcab-api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, Loader2, RefreshCw } from 'lucide-react';
