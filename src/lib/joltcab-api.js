@@ -727,9 +727,10 @@ class JoltCabAPI {
         });
       },
     },
+    };
 
     // ==================== COUNTRIES ====================
-    countries: {
+    countries = {
   list: async () => {
        const response = await this.request("/countries");
        return response.data || [];
@@ -766,8 +767,7 @@ class JoltCabAPI {
        const response = await this.request("/countries/business");
        return response.data || [];
   },
-},
-    };
+};
 }
 
 // Crear instancia global
