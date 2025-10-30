@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { Plus, Globe, Loader2, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 export default function CountryManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -92,7 +93,7 @@ export default function CountryManagement() {
         const currencyCode = Object.keys(currencies)[0] || 'USD';
         const currencyData = currencies[currencyCode] || {};
         
-        const idd = country.idd || {};
+        const idd = country._idd || {};
         const root = idd.root || '';
         const suffixes = idd.suffixes || [];
         const countryCode = root + (suffixes.length > 0 ? suffixes[0] : '') || root || '+1';
@@ -180,26 +181,41 @@ export default function CountryManagement() {
 
   const { data: countries = [], isLoading } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list('-created_date'),
+    queryFn: async () => {
+      const data = await joltcab.countries.list();
+      return data;
+    },
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Country.create(data),
+    mutationFn: async (data) => {
+      return await joltcab.countries.create(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['countries'] });
       setIsDialogOpen(false);
       setEditingCountry(null);
       setSelectedCountryCode("");
+      toast.success('Country created successfully');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to create country');
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Country.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      return await joltcab.countries.update(id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['countries'] });
+      toast.success('Country updated successfully');
       setIsDialogOpen(false);
       setEditingCountry(null);
       setSelectedCountryCode("");
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to update country');
     },
   });
 
@@ -256,20 +272,24 @@ export default function CountryManagement() {
     e.preventDefault();
     const formData = new FormData(e.target);
     
+    // Map frontend fields to backend model fields
     const data = {
-      name: formData.get('name'),
+      countryname: formData.get('name'),
+      countrycode: formData.get('country_code')?.replace('+', '') || '',
+      alpha2: selectedCountryCode || '',
       currency: formData.get('currency'),
-      currency_sign: formData.get('currency_sign'),
-      country_code: formData.get('country_code'),
-      business_status: formData.get('business_status') === 'on',
-      bonus_to_user: parseFloat(formData.get('bonus_to_user')) || 150,
-      bonus_to_referral: parseFloat(formData.get('bonus_to_referral')) || 150,
-      referral_max_usage: parseInt(formData.get('referral_max_usage')) || 10,
+      currencycode: formData.get('currency'),
+      currencysign: formData.get('currency_sign'),
+      countryphonecode: formData.get('country_code'),
       flag_url: formData.get('flag_url') || '',
+      isBusiness: formData.get('business_status') === 'on',
+      referral_bonus_to_user: parseFloat(formData.get('bonus_to_user')) || 150,
+      bonus_to_userreferral: parseFloat(formData.get('bonus_to_referral')) || 150,
+      userreferral: parseInt(formData.get('referral_max_usage')) || 10,
     };
 
     if (editingCountry) {
-      updateMutation.mutate({ id: editingCountry.id, data });
+      updateMutation.mutate({ id: editingCountry._id, data });
     } else {
       createMutation.mutate(data);
     }
@@ -337,13 +357,13 @@ export default function CountryManagement() {
                             <div className="flex items-center gap-2">
                               <img 
                                 src={country.flag_url} 
-                                alt={country.name} 
+                                alt={country.countryname} 
                                 className="w-6 h-4 object-cover" 
                                 onError={(e) => {
                                   e.target.style.display = 'none';
                                 }}
                               />
-                              <span>{country.name}</span>
+                              <span>{country.countryname}</span>
                             </div>
                           </SelectItem>
                         ))}
@@ -481,14 +501,14 @@ export default function CountryManagement() {
           </div>
         ) : (
           countries.map((country) => (
-            <div key={country.id} className="col-span-1">
+            <div key={country._id} className="col-span-1">
               <div className="bg-white rounded-lg shadow border border-gray-200">
                 <div className="p-6 text-center">
                   <div className="mb-4">
                     {country.flag_url ? (
                       <img 
                         src={country.flag_url} 
-                        alt={country.name}
+                        alt={country.countryname}
                         style={{ border: 'none', borderRadius: '0px', height: '65px', margin: '0 auto' }}
                       />
                     ) : (
@@ -497,7 +517,7 @@ export default function CountryManagement() {
                       </div>
                     )}
                   </div>
-                  <div className="font-bold text-lg text-gray-900">{country.name}</div>
+                  <div className="font-bold text-lg text-gray-900">{country.countryname}</div>
                 </div>
 
                 <div className="px-4 pb-4">
@@ -508,15 +528,15 @@ export default function CountryManagement() {
                     </li>
                     <li className="flex justify-between items-center py-2 px-3 border-t border-gray-200">
                       <span className="text-gray-700">Sign</span>
-                      <Badge className="bg-[#f0ad4e] text-white hover:bg-[#ec971f]">{country.currency_sign}</Badge>
+                      <Badge className="bg-[#f0ad4e] text-white hover:bg-[#ec971f]">{country.currencysign}</Badge>
                     </li>
                     <li className="flex justify-between items-center py-2 px-3 border-t border-gray-200">
                       <span className="text-gray-700">Country Code</span>
-                      <Badge className="bg-[#5bc0de] text-white hover:bg-[#31b0d5]">{country.country_code}</Badge>
+                      <Badge className="bg-[#5bc0de] text-white hover:bg-[#31b0d5]">{country.countryphonecode}</Badge>
                     </li>
                     <li className="flex justify-between items-center py-2 px-3 border-t border-gray-200">
                       <span className="text-gray-700">Country Business</span>
-                      {country.business_status ? (
+                      {country.isBusiness ? (
                         <Badge className="bg-[#5cb85c] text-white hover:bg-[#4cae4c]">ON</Badge>
                       ) : (
                         <Badge className="bg-[#f0ad4e] text-white hover:bg-[#ec971f]">OFF</Badge>
@@ -524,15 +544,15 @@ export default function CountryManagement() {
                     </li>
                     <li className="flex justify-between items-center py-2 px-3 border-t border-gray-200">
                       <span className="text-gray-700">Referral Bonus to User</span>
-                      <Badge variant="secondary" className="bg-gray-200 text-gray-800">{country.bonus_to_user}</Badge>
+                      <Badge variant="secondary" className="bg-gray-200 text-gray-800">{country.referral_bonus_to_user || 0}</Badge>
                     </li>
                     <li className="flex justify-between items-center py-2 px-3 border-t border-gray-200">
                       <span className="text-gray-700">Bonus to User Referral</span>
-                      <Badge variant="secondary" className="bg-gray-200 text-gray-800">{country.bonus_to_referral}</Badge>
+                      <Badge variant="secondary" className="bg-gray-200 text-gray-800">{country.bonus_to_userreferral || 0}</Badge>
                     </li>
                     <li className="flex justify-between items-center py-2 px-3 border-t border-gray-200">
                       <span className="text-gray-700">User Referral Max Use</span>
-                      <Badge variant="secondary" className="bg-gray-200 text-gray-800">{country.referral_max_usage}</Badge>
+                      <Badge variant="secondary" className="bg-gray-200 text-gray-800">{country.userreferral || 0}</Badge>
                     </li>
                   </ul>
 

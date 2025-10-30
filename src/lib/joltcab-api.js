@@ -728,6 +728,46 @@ class JoltCabAPI {
       },
     },
   };
+
+    // ==================== COUNTRIES ====================
+    this.countries = {
+      list: async () => {
+        const response = await this.request("/countries");
+        return response.data || [];
+      },
+      
+      get: async (id) => {
+        const response = await this.request(`/countries/${id}`);
+        return response.data;
+      },
+      
+      create: async (data) => {
+        const response = await this.request("/countries", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+        return response.data;
+      },
+      
+      update: async (id, data) => {
+        const response = await this.request(`/countries/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(data),
+        });
+        return response.data;
+      },
+      
+      delete: async (id) => {
+        return await this.request(`/countries/${id}`, {
+          method: "DELETE",
+        });
+      },
+      
+      business: async () => {
+        const response = await this.request("/countries/business");
+        return response.data || [];
+      },
+    };
 }
 
 // Crear instancia global
