@@ -8,7 +8,10 @@ import {
   forgotPassword,
   resetPassword,
 } from '../controllers/auth.controller.js';
+<<<<<<< HEAD
+=======
 import { googleAuth, googleCallback } from '../controllers/oauth.controller.js';
+>>>>>>> e1db439 (feat: Implementar Google OAuth para panel de administración)
 import { protect } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/rateLimit.js';
 
@@ -20,10 +23,13 @@ router.post('/login', authLimiter, login);
 router.post('/forgot-password', authLimiter, forgotPassword);
 router.post('/reset-password', authLimiter, resetPassword);
 
+<<<<<<< HEAD
+=======
 // Google OAuth routes
 router.get('/google', googleAuth);
 router.get('/google/callback', googleCallback);
 
+>>>>>>> e1db439 (feat: Implementar Google OAuth para panel de administración)
 // Rutas protegidas
 router.post('/logout', protect, logout);
 router.get('/me', protect, getMe);
