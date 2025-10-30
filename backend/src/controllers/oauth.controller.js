@@ -71,7 +71,7 @@ export const googleCallback = async (req, res) => {
 
     const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
     const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-    const GOOGLE_REDIRECT_URI = `${req.protocol}://${req.get('host')}/auth/google/callback`;
+    const GOOGLE_REDIRECT_URI = `${req.protocol}://${req.get('host')}/api/v1/auth/google/callback`;
 
     // Exchange code for tokens
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {

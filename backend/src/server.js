@@ -55,11 +55,8 @@ app.use(compression());
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
   'http://localhost:5173',
   'http://localhost:3000',
-<<<<<<< HEAD
-=======
   'http://localhost:5000',
   'http://127.0.0.1:5000',
->>>>>>> e1db439 (feat: Implementar Google OAuth para panel de administración)
 ];
 
 app.use(cors({
@@ -67,14 +64,11 @@ app.use(cors({
     // Permitir requests sin origin (mobile apps, Postman, etc)
     if (!origin) return callback(null, true);
     
-<<<<<<< HEAD
-=======
     // Permitir todos los orígenes de Replit
     if (origin && origin.includes('replit.dev')) {
       return callback(null, true);
     }
     
->>>>>>> e1db439 (feat: Implementar Google OAuth para panel de administración)
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {

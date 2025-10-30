@@ -5,11 +5,6 @@ import { redisPubClient, redisSubClient } from './redis.js';
 let io;
 
 export const initializeSocket = (server) => {
-<<<<<<< HEAD
-  io = new Server(server, {
-    cors: {
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173', 'http://localhost:3000'],
-=======
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
     'http://localhost:5173',
     'http://localhost:3000',
@@ -25,7 +20,6 @@ export const initializeSocket = (server) => {
         if (allowedOrigins.includes(origin)) return callback(null, true);
         callback(new Error('Not allowed by CORS'));
       },
->>>>>>> e1db439 (feat: Implementar Google OAuth para panel de administración)
       credentials: true,
     },
     transports: ['websocket', 'polling'],
