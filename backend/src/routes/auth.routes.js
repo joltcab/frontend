@@ -8,6 +8,7 @@ import {
   forgotPassword,
   resetPassword,
 } from '../controllers/auth.controller.js';
+import { googleAuth, googleCallback } from '../controllers/oauth.controller.js';
 import { protect } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/rateLimit.js';
 
@@ -18,6 +19,10 @@ router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
 router.post('/forgot-password', authLimiter, forgotPassword);
 router.post('/reset-password', authLimiter, resetPassword);
+
+// Google OAuth routes
+router.get('/google', googleAuth);
+router.get('/google/callback', googleCallback);
 
 // Rutas protegidas
 router.post('/logout', protect, logout);
