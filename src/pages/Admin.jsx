@@ -83,7 +83,7 @@ export default function Admin() {
     // Redirect to backend OAuth endpoint
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
     const callbackUrl = `${window.location.origin}/GoogleCallback`;
-    window.location.href = `${apiUrl.replace('/api/v1', '')}/auth/google?role=admin&callback=${encodeURIComponent(callbackUrl)}`;
+    window.location.href = `${apiUrl}/auth/google?role=admin&callback=${encodeURIComponent(callbackUrl)}`;
   };
 
   if (loading) {
