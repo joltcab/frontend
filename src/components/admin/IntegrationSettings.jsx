@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -74,7 +74,7 @@ export default function IntegrationSettings() {
     }, 2000);
   };
 
-  const ConfigInput = ({ configKey, label, category, description, isSecret = false, placeholder }) => {
+  const ConfigInput = ({ configKey, label, category, description, isSecret = false, placeholder, disabled = false }) => {
     const value = formData[configKey] || '';
 
     const handleChange = (e) => {
@@ -85,7 +85,7 @@ export default function IntegrationSettings() {
     };
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-2" data-category={category || undefined}>
         <Label>{label}</Label>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -95,6 +95,7 @@ export default function IntegrationSettings() {
               onChange={handleChange}
               placeholder={placeholder}
               className="pr-10"
+              disabled={disabled}
             />
             {isSecret && (
               <button
@@ -108,7 +109,7 @@ export default function IntegrationSettings() {
           </div>
           <Button
             onClick={() => handleSaveConfig(configKey, value)}
-            disabled={updateSettingsMutation.isPending}
+            disabled={disabled || updateSettingsMutation.isPending}
             className="bg-[#15B46A] hover:bg-[#0F9456]"
           >
             {updateSettingsMutation.isPending ? (
@@ -123,6 +124,16 @@ export default function IntegrationSettings() {
         )}
       </div>
     );
+  };
+
+  ConfigInput.propTypes = {
+    configKey: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    category: PropTypes.string,
+    description: PropTypes.string,
+    isSecret: PropTypes.bool,
+    placeholder: PropTypes.string,
+    disabled: PropTypes.bool,
   };
 
   if (isLoading) {
@@ -379,12 +390,18 @@ export default function IntegrationSettings() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="p-3 rounded-lg border border-yellow-200 bg-yellow-50">
+                <p className="text-sm text-yellow-800">
+                  SendGrid aún no está soportado por el backend en <code>/settings</code>. Usa el panel de SMTP en <strong>Admin → Email Settings</strong> mientras se habilita.
+                </p>
+              </div>
               <ConfigInput
                 configKey="sendgrid_api_key"
                 label="SendGrid API Key *"
                 category="email"
                 description="Get from https://app.sendgrid.com/settings/api_keys"
                 isSecret={true}
+                disabled={true}
               />
               <ConfigInput
                 configKey="sendgrid_from_email"
@@ -392,6 +409,7 @@ export default function IntegrationSettings() {
                 category="email"
                 description="Verified sender email"
                 placeholder="noreply@joltcab.com"
+                disabled={true}
               />
             </CardContent>
           </Card>
