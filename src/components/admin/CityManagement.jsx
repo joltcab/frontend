@@ -42,7 +42,7 @@ export default function CityManagement() {
   // Sincronizar el país seleccionado cuando abrimos para editar
   useEffect(() => {
     if (editingCity?.country_id) {
-      setSelectedCountryId(editingCity.country_id);
+      setSelectedCountryId(String(editingCity.country_id));
     } else if (!isDialogOpen) {
       setSelectedCountryId("");
     }
@@ -156,6 +156,7 @@ export default function CityManagement() {
             latitude: r.lat,
             longitude: r.lng,
             country: comps.country,
+            country_code: (comps.country_code || comps.alpha2 || comps.iso2 || '').toUpperCase(),
             timezone: getTimezoneFromCoordinates(r.lat, r.lng),
           };
         });
@@ -164,7 +165,7 @@ export default function CityManagement() {
       // Caso 2: fallback a Nominatim (OpenStreetMap) si backend falla o sin resultados
       if (!suggestions.length) {
         console.log('🤔 No backend results, trying Nominatim fallback...');
-        const nomiRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`, {
+        const nomiRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`, {
           headers: { 'Accept': 'application/json' }
         });
         const nomiData = await nomiRes.json();
@@ -182,6 +183,7 @@ export default function CityManagement() {
             latitude: lat,
             longitude: lng,
             country,
+            country_code: (item.address?.country_code || '').toUpperCase(),
             timezone: getTimezoneFromCoordinates(lat, lng),
           };
         });
@@ -218,6 +220,21 @@ export default function CityManagement() {
     return timezoneMap[offset.toString()] || 'UTC';
   };
 
+  // Normalizador de nombres para matching robusto
+  const normalizeCountryName = (str = '') => {
+    try {
+      return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    } catch {
+      return (str || '').toLowerCase().trim();
+    }
+  };
+
   const handleCitySelect = (city) => {
     console.log('✅ City selected:', city);
     setCitySearchQuery(city.name);
@@ -242,11 +259,38 @@ export default function CityManagement() {
 
     // Intentar autoseleccionar país
     try {
-      if (city.country && Array.isArray(countries)) {
-        const match = countries.find(c => (c.name || '').toLowerCase() === city.country.toLowerCase());
-        if (match) {
-          setSelectedCountryId(match.id);
-          console.log('🌍 Country auto-selected:', match);
+      if (Array.isArray(countries)) {
+        // 1) Intentar por código ISO (alpha2)
+        if (city.country_code) {
+          const isoCode = city.country_code.toUpperCase();
+          const byCode = countries.find(c => (c.alpha2 || c.code || c.country_code || '')?.toUpperCase() === isoCode);
+          if (byCode) {
+            setSelectedCountryId(String(byCode.id));
+            console.log('🌍 Country auto-selected by ISO:', byCode);
+            return;
+          }
+        }
+
+        // 2) Intentar por nombre normalizado
+        if (city.country) {
+          const target = normalizeCountryName(city.country);
+          const byName = countries.find(c => normalizeCountryName(c.name) === target);
+          if (byName) {
+            setSelectedCountryId(String(byName.id));
+            console.log('🌍 Country auto-selected by name:', byName);
+            return;
+          }
+
+          // 3) Coincidencia parcial
+          const byPartial = countries.find(c => {
+            const n = normalizeCountryName(c.name);
+            return n.includes(target) || target.includes(n);
+          });
+          if (byPartial) {
+            setSelectedCountryId(String(byPartial.id));
+            console.log('🌍 Country auto-selected by partial name:', byPartial);
+            return;
+          }
         }
       }
     } catch (e) {
@@ -287,7 +331,7 @@ export default function CityManagement() {
 
     // Forzar country_id desde el Select controlado si existe
     if (selectedCountryId) {
-      data.country_id = selectedCountryId;
+      data.country_id = Number(selectedCountryId);
     }
 
     console.log('📝 Form data:', data);
@@ -413,12 +457,13 @@ export default function CityManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       {countries.map(c => (
-                        <SelectItem key={c.id} value={c.id}>
+                        <SelectItem key={c.id} value={String(c.id)}>
                           {c.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  <input type="hidden" name="country_id" value={selectedCountryId || ''} />
                 </div>
 
                 <div>
