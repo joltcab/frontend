@@ -35,7 +35,15 @@ export function RealtimeProvider({ children }) {
       if (!user) return;
 
       // Create WebSocket connection
-      const wsUrl = WS_BASE_URL || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/realtime`;
+      let wsUrl = WS_BASE_URL || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/realtime`;
+      if (WS_BASE_URL) {
+        // Normalize: ensure path includes /api/realtime
+        const hasPath = /\/[^/]/.test(new URL(WS_BASE_URL).pathname);
+        if (!hasPath) {
+          wsUrl = WS_BASE_URL.replace(/\/$/, '') + '/api/realtime';
+        }
+      }
+      console.info('Connecting WebSocket to:', wsUrl);
       const websocket = new WebSocket(wsUrl);
 
       websocket.onopen = () => {

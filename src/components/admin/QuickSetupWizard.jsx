@@ -265,10 +265,16 @@ export default function QuickSetupWizard() {
 
   const isStepValid = () => {
     if (!currentStep.fields) return true;
-    
+
     return currentStep.fields
       .filter(f => f.required)
-      .every(f => config[f.key] && config[f.key].trim() !== '');
+      .every(f => {
+        const val = config[f.key];
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'string') return val.trim() !== '';
+        // For booleans, numbers, or objects, presence counts as valid
+        return true;
+      });
   };
 
   const StepIcon = currentStep.icon;
