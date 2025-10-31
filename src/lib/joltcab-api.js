@@ -231,8 +231,10 @@ class JoltCabAPI {
         const response = await this.request('/admins');
         return response.data?.admins || [];
       },
-      filter: async (filters) => {
-        const response = await this.request('/admins');
+      filter: async (filters = {}) => {
+        const query = new URLSearchParams(filters).toString();
+        const endpoint = query ? `/admins?${query}` : '/admins';
+        const response = await this.request(endpoint);
         return response.data?.admins || [];
       },
       create: async (data) => {
@@ -466,6 +468,35 @@ class JoltCabAPI {
     getConfigStatus: async () => {
       const response = await this.request('/settings/config-status');
       return response.data || {};
+    },
+  };
+
+  // ==================== FUNCTIONS (Compatibilidad Base44) ====================
+  functions = {
+    invoke: async (functionName, payload = {}) => {
+      try {
+        switch (functionName) {
+          case 'geocodeAddress': {
+            const res = await this.request('/maps/geocode-address', {
+              method: 'POST',
+              body: JSON.stringify({
+                address: payload.address,
+                language: payload.language || 'en',
+              }),
+            });
+            // Wrap to match expected shape in callers: response.data.success, response.data.result
+            return { data: res };
+          }
+
+          default: {
+            console.warn(`Function ${functionName} not implemented in frontend adapter`);
+            return { data: { success: false, error: `Function ${functionName} not implemented` } };
+          }
+        }
+      } catch (error) {
+        console.error(`Error invoking function ${functionName}:`, error);
+        return { data: { success: false, error: error.message || 'Invocation error' } };
+      }
     },
   };
 

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import PropTypes from "prop-types";
 import { base44 } from "@/api/base44Client";
 
 const RealtimeContext = createContext(null);
@@ -16,14 +17,25 @@ export function RealtimeProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [ws, setWs] = useState(null);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const DISABLE_REALTIME = import.meta.env.VITE_DISABLE_REALTIME === 'true';
+  const WS_BASE_URL = import.meta.env.VITE_WS_URL; // e.g., ws://localhost:5001/api/realtime
+  const IS_LOCALHOST = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+  );
 
   const connect = useCallback(async () => {
     try {
+      if (DISABLE_REALTIME || IS_LOCALHOST) {
+        console.warn("Realtime disabled via VITE_DISABLE_REALTIME=true");
+        return;
+      }
+
       const user = await base44.auth.me();
       if (!user) return;
 
       // Create WebSocket connection
-      const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/realtime`;
+      const wsUrl = WS_BASE_URL || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/realtime`;
       const websocket = new WebSocket(wsUrl);
 
       websocket.onopen = () => {
@@ -113,3 +125,7 @@ export function RealtimeProvider({ children }) {
     </RealtimeContext.Provider>
   );
 }
+
+RealtimeProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
