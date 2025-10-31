@@ -48,6 +48,8 @@ import PassengerAuth from "./PassengerAuth";
 
 import RideHistory from "./RideHistory";
 
+import TestDatabase from "./TestDatabase";
+
 import RideDetail from "./RideDetail";
 
 import TrackRide from "./TrackRide";
@@ -195,6 +197,8 @@ const PAGES = {
     RideHistory: RideHistory,
     
     RideDetail: RideDetail,
+    
+    TestDatabase: TestDatabase,
     
     TrackRide: TrackRide,
     
