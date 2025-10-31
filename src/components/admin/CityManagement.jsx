@@ -48,6 +48,23 @@ export default function CityManagement() {
     }
   }, [editingCity, isDialogOpen]);
 
+  // Diagnóstico: log de países cargados y cambios de selección
+  useEffect(() => {
+    try {
+      console.log('🌐 [CityManagement] Countries loaded:', Array.isArray(countries) ? countries.length : 0);
+      if (Array.isArray(countries)) {
+        console.table(countries.map(c => ({ id: c.id, name: c.name, alpha2: c.alpha2 || '', country_code: c.country_code || '' })));
+      }
+    } catch (e) {}
+  }, [countries]);
+
+  useEffect(() => {
+    if (selectedCountryId) {
+      const found = Array.isArray(countries) ? countries.find(c => String(c.id) === String(selectedCountryId)) : null;
+      console.log('✅ [CityManagement] selectedCountryId set:', selectedCountryId, found ? `-> ${found.name}` : '');
+    }
+  }, [selectedCountryId, countries]);
+
   const createMutation = useMutation({
     mutationFn: async (data) => {
       console.log('➕ [CityManagement] Creating city:', data);
@@ -235,6 +252,43 @@ export default function CityManagement() {
     }
   };
 
+  // Alias comunes de países para mejorar matching cuando alpha2 no está disponible
+  // clave: nombre normalizado, valor: código ISO2
+  const COUNTRY_ALIASES = {
+    // Estados Unidos
+    'united states': 'US',
+    'united states of america': 'US',
+    'usa': 'US',
+    // Reino Unido
+    'united kingdom': 'GB',
+    'uk': 'GB',
+    'great britain': 'GB',
+    // Emiratos Árabes Unidos
+    'united arab emirates': 'AE',
+    'uae': 'AE',
+    // República Checa
+    'czech republic': 'CZ',
+    'czechia': 'CZ',
+    // Corea del Sur
+    'south korea': 'KR',
+    'republic of korea': 'KR',
+    // Costa de Marfil
+    "cote d'ivoire": 'CI',
+    'cote divoire': 'CI',
+    'ivory coast': 'CI',
+    // Turquía
+    'turkiye': 'TR',
+    'turkey': 'TR',
+    // Países Bajos
+    'netherlands': 'NL',
+    'holland': 'NL',
+    // Rusia
+    'russia': 'RU',
+    'russian federation': 'RU',
+    // República Dominicana
+    'dominican republic': 'DO',
+  };
+
   const handleCitySelect = (city) => {
     console.log('✅ City selected:', city);
     setCitySearchQuery(city.name);
@@ -269,6 +323,16 @@ export default function CityManagement() {
             console.log('🌍 Country auto-selected by ISO:', byCode);
             return;
           }
+          // 1b) Intentar por alias del nombre del país en la lista de países si falta alpha2
+          const byAliasIso = countries.find(c => {
+            const aliasIso = COUNTRY_ALIASES[normalizeCountryName(c.name)] || null;
+            return aliasIso && aliasIso.toUpperCase() === isoCode;
+          });
+          if (byAliasIso) {
+            setSelectedCountryId(String(byAliasIso.id));
+            console.log('🌍 Country auto-selected by ISO via alias:', byAliasIso);
+            return;
+          }
         }
 
         // 2) Intentar por nombre normalizado
@@ -290,6 +354,26 @@ export default function CityManagement() {
             setSelectedCountryId(String(byPartial.id));
             console.log('🌍 Country auto-selected by partial name:', byPartial);
             return;
+          }
+
+          // 4) Intentar derivar ISO desde el nombre del resultado y buscar por alpha2 o alias
+          const derivedIso = COUNTRY_ALIASES[target] || null;
+          if (derivedIso) {
+            const byDerivedIso = countries.find(c => (c.alpha2 || '')?.toUpperCase() === derivedIso);
+            if (byDerivedIso) {
+              setSelectedCountryId(String(byDerivedIso.id));
+              console.log('🌍 Country auto-selected by derived ISO from name:', byDerivedIso);
+              return;
+            }
+            const byDerivedAlias = countries.find(c => {
+              const aliasIso = COUNTRY_ALIASES[normalizeCountryName(c.name)] || null;
+              return aliasIso && aliasIso.toUpperCase() === derivedIso;
+            });
+            if (byDerivedAlias) {
+              setSelectedCountryId(String(byDerivedAlias.id));
+              console.log('🌍 Country auto-selected by derived ISO via country alias:', byDerivedAlias);
+              return;
+            }
           }
         }
       }
