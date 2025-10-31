@@ -423,10 +423,10 @@ export default function QuickSetupWizard() {
             ) : (
               <Alert className="bg-blue-50 border-blue-200">
                 <Settings className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-900">
+              <AlertDescription className="text-blue-900">
                   This step will initialize default system configurations, email templates, and SMS templates.
-                  Click "Next" to proceed.
-                </AlertDescription>
+                  Click &quot;Next&quot; to proceed.
+              </AlertDescription>
               </Alert>
             )}
           </div>
@@ -494,7 +494,7 @@ export default function QuickSetupWizard() {
                 onClick={() => window.location.reload()}
                 className="text-gray-500 text-sm"
               >
-                I'll configure this later
+                I&apos;ll configure this later
               </Button>
             </div>
           )}

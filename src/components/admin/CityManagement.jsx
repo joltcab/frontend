@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,7 @@ export default function CityManagement() {
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchingCities, setSearchingCities] = useState(false);
+  const [selectedCountryId, setSelectedCountryId] = useState("");
   const queryClient = useQueryClient();
 
   const { data: cities = [], isLoading } = useQuery({
@@ -37,6 +38,15 @@ export default function CityManagement() {
     queryKey: ['countries'],
     queryFn: () => base44.entities.Country.list(),
   });
+
+  // Sincronizar el país seleccionado cuando abrimos para editar
+  useEffect(() => {
+    if (editingCity?.country_id) {
+      setSelectedCountryId(editingCity.country_id);
+    } else if (!isDialogOpen) {
+      setSelectedCountryId("");
+    }
+  }, [editingCity, isDialogOpen]);
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
@@ -113,49 +123,73 @@ export default function CityManagement() {
 
       console.log('📡 Geocoding response:', response.data);
 
-      if (response.data.success) {
-        const allResults = [response.data.result, ...(response.data.alternatives || [])];
+      let suggestions = [];
+
+      // Caso 1: backend JoltCab devuelve { success, result, alternatives }
+      if (response.data && response.data.success) {
+        const allResults = [response.data.result, ...(response.data.alternatives || [])].filter(Boolean);
         console.log('📍 Total results:', allResults.length);
         
         const cityResults = allResults
           .filter(r => {
-            const isCity = r.types.includes('locality') || 
-                          r.types.includes('administrative_area_level_1') ||
-                          r.types.includes('administrative_area_level_2');
+            const types = r.types || [];
+            const isCity = types.includes('locality') || 
+                          types.includes('administrative_area_level_1') ||
+                          types.includes('administrative_area_level_2');
             return isCity;
           })
           .slice(0, 5);
 
         console.log('✅ Filtered city results:', cityResults.length);
 
-        const suggestions = cityResults.map(r => {
-          const cityName = r.components.locality || 
-                          r.components.administrative_area_level_1 || 
-                          r.components.administrative_area_level_2 ||
-                          r.formatted_address.split(',')[0];
-          
+        suggestions = cityResults.map(r => {
+          const comps = r.components || {};
+          const cityName = comps.locality || 
+                          comps.administrative_area_level_1 || 
+                          comps.administrative_area_level_2 ||
+                          (r.formatted_address ? r.formatted_address.split(',')[0] : '');
           const cityCode = cityName ? cityName.substring(0, 3).toUpperCase() : '';
-          
           return {
             name: cityName,
-            full_name: r.formatted_address,
+            full_name: r.formatted_address || cityName,
             city_code: cityCode,
             latitude: r.lat,
             longitude: r.lng,
-            country: r.components.country,
+            country: comps.country,
             timezone: getTimezoneFromCoordinates(r.lat, r.lng),
           };
         });
-
-        console.log('💡 Final suggestions:', suggestions);
-        
-        setCitySuggestions(suggestions);
-        setShowSuggestions(suggestions.length > 0);
-      } else {
-        console.error('❌ Geocoding failed:', response.data.error);
-        setCitySuggestions([]);
-        setShowSuggestions(false);
       }
+
+      // Caso 2: fallback a Nominatim (OpenStreetMap) si backend falla o sin resultados
+      if (!suggestions.length) {
+        console.log('🤔 No backend results, trying Nominatim fallback...');
+        const nomiRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`, {
+          headers: { 'Accept': 'application/json' }
+        });
+        const nomiData = await nomiRes.json();
+        suggestions = (nomiData || []).map(item => {
+          const parts = (item.display_name || '').split(',').map(s => s.trim());
+          const name = parts[0] || '';
+          const country = parts[parts.length - 1] || '';
+          const cityCode = name ? name.substring(0, 3).toUpperCase() : '';
+          const lat = parseFloat(item.lat);
+          const lng = parseFloat(item.lon);
+          return {
+            name,
+            full_name: item.display_name || name,
+            city_code: cityCode,
+            latitude: lat,
+            longitude: lng,
+            country,
+            timezone: getTimezoneFromCoordinates(lat, lng),
+          };
+        });
+      }
+
+      console.log('💡 Final suggestions:', suggestions);
+      setCitySuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
     } catch (error) {
       console.error('❌ Error searching cities:', error);
       setCitySuggestions([]);
@@ -205,6 +239,19 @@ export default function CityManagement() {
       
       console.log('📝 Fields auto-filled');
     }, 100);
+
+    // Intentar autoseleccionar país
+    try {
+      if (city.country && Array.isArray(countries)) {
+        const match = countries.find(c => (c.name || '').toLowerCase() === city.country.toLowerCase());
+        if (match) {
+          setSelectedCountryId(match.id);
+          console.log('🌍 Country auto-selected:', match);
+        }
+      }
+    } catch (e) {
+      console.warn('Country autoselect failed:', e);
+    }
   };
 
   const handleCitySearchChange = (e) => {
@@ -237,6 +284,11 @@ export default function CityManagement() {
       timezone: formData.get('timezone') || '',
       business_status: formData.get('business_status') === 'on',
     };
+
+    // Forzar country_id desde el Select controlado si existe
+    if (selectedCountryId) {
+      data.country_id = selectedCountryId;
+    }
 
     console.log('📝 Form data:', data);
 
@@ -355,7 +407,7 @@ export default function CityManagement() {
 
                 <div>
                   <Label>Country *</Label>
-                  <Select name="country_id" defaultValue={editingCity?.country_id} required>
+                  <Select value={selectedCountryId} onValueChange={setSelectedCountryId} required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
@@ -423,6 +475,8 @@ export default function CityManagement() {
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
+                {/* Asegurar que country_id se envía en el formulario */}
+                <input type="hidden" name="country_id" value={selectedCountryId || ''} />
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
                 </Button>
