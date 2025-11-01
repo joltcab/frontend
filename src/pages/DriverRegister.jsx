@@ -1,13 +1,14 @@
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Car, Loader2, Camera, UploadCloud, CheckCircle2, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
+import SocialLogin from "@/components/auth/SocialLogin";
 
 export default function DriverRegister() {
   const [formData, setFormData] = useState({
@@ -32,6 +33,41 @@ export default function DriverRegister() {
   const [error, setError] = useState("");
   const [selfiePreview, setSelfiePreview] = useState(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  
+  // Finaliza login social si viene token de proveedor
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (!token) return;
+
+    const finalize = async () => {
+      try {
+        joltcab.setToken(token);
+        const pendingRole = localStorage.getItem('pendingUserRole');
+        if (pendingRole) localStorage.removeItem('pendingUserRole');
+        const user = await joltcab.auth.me();
+        // Limpia la query
+        const url = new URL(window.location.href);
+        url.search = '';
+        window.history.replaceState({}, document.title, url.toString());
+
+        // Redirige según estado
+        if (user?.role === 'driver') {
+          if (user.status === 'pending') {
+            window.location.href = createPageUrl('CompleteVerification');
+          } else {
+            window.location.href = createPageUrl('DriverDashboard');
+          }
+        } else {
+          window.location.href = createPageUrl('UserDashboard');
+        }
+      } catch (e) {
+        // Ignora errores de finalización para no romper el formulario
+      }
+    };
+
+    finalize();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -209,7 +245,7 @@ export default function DriverRegister() {
         documents: documents
       };
 
-      const response = await base44.functions.invoke('registerDriver', payload);
+      const response = await joltcab.functions.invoke('registerDriver', payload);
       
       console.log('📥 Response:', response);
 
@@ -523,6 +559,11 @@ export default function DriverRegister() {
           <p className="mt-2 text-center text-sm text-gray-600">
             Join us as a driver in a few simple steps
           </p>
+        </div>
+
+        {/* Social Login for Drivers */}
+        <div className="pt-2">
+          <SocialLogin role="driver" />
         </div>
 
         {/* Step Indicator */}

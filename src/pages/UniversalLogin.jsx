@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { joltcab } from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +35,7 @@ export default function UniversalLogin() {
       if (user) {
         redirectToDashboard(user.role);
       }
-    } catch (error) {
+    } catch {
       // Not logged in
     }
   };
@@ -155,7 +155,7 @@ export default function UniversalLogin() {
 
   const getIdentifierIcon = () => {
     if (loginData.identifier.includes('@')) return Mail;
-    if (/^\+?[\d\s\-\(\)]+$/.test(loginData.identifier)) return Phone;
+    if (/^\+?[\d\s\-()]+$/.test(loginData.identifier)) return Phone;
     return Mail;
   };
 
@@ -341,7 +341,7 @@ export default function UniversalLogin() {
 
             <div className="mt-6 text-center">
               <p className="text-gray-600">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <a 
                   href={createPageUrl("Register")} 
                   className="text-[#15B46A] hover:text-[#0F9456] font-semibold"

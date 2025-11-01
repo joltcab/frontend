@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { joltcab } from "@/lib/joltcab-api";
 import { Loader2 } from "lucide-react";
+import PropTypes from "prop-types";
 
-export default function SocialLogin({ onSuccess, onError, buttonText = "Continue with", role }) {
+export default function SocialLogin({ onError, buttonText = "Continue with", role }) {
   const [loading, setLoading] = useState(null);
 
   const handleSocialLogin = async (provider) => {
@@ -120,3 +121,9 @@ export default function SocialLogin({ onSuccess, onError, buttonText = "Continue
     </div>
   );
 }
+
+SocialLogin.propTypes = {
+  onError: PropTypes.func,
+  buttonText: PropTypes.string,
+  role: PropTypes.string,
+};
