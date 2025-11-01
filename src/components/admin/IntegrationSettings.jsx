@@ -52,8 +52,6 @@ export default function IntegrationSettings() {
     },
   });
 
-  const getConfig = (key) => formData[key] || '';
-
   const handleSaveConfig = (key, value) => {
     const updateData = {
       [key]: value
@@ -217,8 +215,8 @@ export default function IntegrationSettings() {
                   <p className="text-sm text-blue-700">Automatically falls back to Google Maps if Mapbox fails</p>
                 </div>
                 <Switch
-                  checked={getConfig('use_mapbox_primary')?.config_value === 'true'}
-                  onCheckedChange={(checked) => handleSaveConfig('use_mapbox_primary', checked.toString(), 'maps', 'Use Mapbox as primary mapping service')}
+                  checked={Boolean(formData?.use_mapbox_primary === true || formData?.use_mapbox_primary === 'true')}
+                  onCheckedChange={(checked) => handleSaveConfig('use_mapbox_primary', checked.toString())}
                 />
               </div>
 

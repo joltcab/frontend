@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,9 +38,10 @@ export default function Admin() {
         return;
       }
 
-      const user = await base44.auth.me();
-      
-      if (user && user.role === 'admin') {
+      const user = await joltcab.auth.me();
+      const isAdmin = user && (user.role === 'admin' || user.user_type === 1);
+
+      if (isAdmin) {
         window.location.href = createPageUrl("AdminPanel");
       } else if (user) {
         setMessage({ 
@@ -68,11 +69,12 @@ export default function Admin() {
     setMessage({ type: '', text: '' });
 
     try {
-      await base44.auth.login(loginData.email, loginData.password);
-      const user = await base44.auth.me();
-      
-      if (user.role !== 'admin') {
-        await base44.auth.logout();
+      await joltcab.auth.login(loginData.email, loginData.password);
+      const user = await joltcab.auth.me();
+
+      const isAdmin = user && (user.role === 'admin' || user.user_type === 1);
+      if (!isAdmin) {
+        await joltcab.auth.logout();
         setMessage({ 
           type: 'error', 
           text: 'Access denied. Admin privileges required.' 
@@ -94,10 +96,9 @@ export default function Admin() {
   };
 
   const handleGoogleLogin = () => {
-    // Redirect to backend OAuth endpoint
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    // Use JoltCab OAuth helper
     const callbackUrl = `${window.location.origin}/GoogleCallback`;
-    window.location.href = `${apiUrl}/auth/google?role=admin&callback=${encodeURIComponent(callbackUrl)}`;
+    joltcab.auth.googleLogin(callbackUrl, 'admin');
   };
 
   if (loading) {

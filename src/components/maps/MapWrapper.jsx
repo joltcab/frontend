@@ -1,6 +1,5 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import MapboxMap from "./MapboxMap";
 import GoogleMapLoader from "./GoogleMapLoader";
 
@@ -8,28 +7,38 @@ import GoogleMapLoader from "./GoogleMapLoader";
  * Smart Map Wrapper that uses Mapbox as primary and falls back to Google Maps
  */
 export default function MapWrapper(props) {
-  const { data: configs = [] } = useQuery({
-    queryKey: ['systemConfigurations'],
-    queryFn: () => base44.entities.SystemConfiguration.list(),
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => joltcab.settings.get(),
   });
 
-  const useMapboxPrimary = configs.find(c => c.config_key === 'use_mapbox_primary')?.config_value === 'true';
-  const mapboxToken = configs.find(c => c.config_key === 'mapbox_access_token')?.config_value;
-  const googleMapsKey = configs.find(c => c.config_key === 'google_maps_api_key')?.config_value;
+  const { data: configStatus } = useQuery({
+    queryKey: ['configStatus'],
+    queryFn: () => joltcab.settings.getConfigStatus(),
+  });
 
-  // Use Mapbox if configured and set as primary
+  const useMapboxPrimary = Boolean(settings?.use_mapbox_primary === true || settings?.use_mapbox_primary === 'true');
+  const mapboxToken = settings?.mapbox_access_token;
+  const googleConfigured = Boolean(configStatus?.status?.google_maps);
+
+  // Usar Mapbox si está configurado y elegido como primario
   if (useMapboxPrimary && mapboxToken) {
     return <MapboxMap {...props} />;
   }
 
-  // Fallback to Google Maps
-  if (googleMapsKey) {
+  // Fallback a Google Maps si está configurado en backend
+  if (googleConfigured) {
     return <GoogleMapLoader {...props} />;
+  }
+
+  // Si solo Mapbox está configurado (sin toggle primario), aún podemos usarlo
+  if (mapboxToken) {
+    return <MapboxMap {...props} />;
   }
 
   return (
     <div className="bg-gray-100 rounded-lg p-8 text-center text-gray-600">
-      <p>No map service configured. Please set up Mapbox or Google Maps in System Configuration.</p>
+      <p>No map service configured. Please set up Mapbox or Google Maps in Integration Settings.</p>
     </div>
   );
 }

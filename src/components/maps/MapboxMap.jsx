@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import PropTypes from "prop-types";
 
 export default function MapboxMap({ 
   center = [-84.3880, 33.7490], // Atlanta default
@@ -17,14 +18,14 @@ export default function MapboxMap({
   const [error, setError] = useState(null);
   const markersRef = useRef([]);
 
-  // Get Mapbox token from system configuration
-  const { data: configs = [] } = useQuery({
-    queryKey: ['systemConfigurations'],
-    queryFn: () => base44.entities.SystemConfiguration.list(),
+  // Obtener token y preferencia desde joltcab settings
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => joltcab.settings.get(),
   });
 
-  const mapboxToken = configs.find(c => c.config_key === 'mapbox_access_token')?.config_value;
-  const useMapboxPrimary = configs.find(c => c.config_key === 'use_mapbox_primary')?.config_value === 'true';
+  const mapboxToken = settings?.mapbox_access_token;
+  const useMapboxPrimary = Boolean(settings?.use_mapbox_primary === true || settings?.use_mapbox_primary === 'true');
 
   useEffect(() => {
     if (!mapboxToken || !useMapboxPrimary) return;
@@ -164,3 +165,23 @@ export default function MapboxMap({
     </div>
   );
 }
+
+MapboxMap.propTypes = {
+  center: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.shape({
+      lat: PropTypes.number,
+      lng: PropTypes.number,
+    })
+  ]),
+  zoom: PropTypes.number,
+  markers: PropTypes.arrayOf(PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number,
+    icon: PropTypes.string,
+    popup: PropTypes.string,
+    title: PropTypes.string,
+  })),
+  onMapClick: PropTypes.func,
+  style: PropTypes.object,
+};

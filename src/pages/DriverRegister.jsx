@@ -1,15 +1,15 @@
 
-import { useState, useEffect } from "react";
-import { Car, Loader2, UploadCloud, CheckCircle2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import SocialLogin from "@/components/auth/SocialLogin";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { joltcab } from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
-import SocialLogin from "@/components/auth/SocialLogin";
+import { Car, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 
 export default function DriverRegister() {
   const [formData, setFormData] = useState({
