@@ -154,7 +154,7 @@ export default function TypeCityAssociation() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list(),
+    queryFn: () => base44.countries.list(),
   });
 
   const { data: zones = [] } = useQuery({

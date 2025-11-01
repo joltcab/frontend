@@ -65,7 +65,7 @@ export default function PriceConfigurationForm() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list(),
+    queryFn: () => base44.countries.list(),
   });
 
   const { data: cities = [] } = useQuery({
@@ -235,7 +235,9 @@ export default function PriceConfigurationForm() {
                       </SelectTrigger>
                       <SelectContent>
                         {countries.map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                          <SelectItem key={String(c.id || c._id)} value={String(c.id || c._id)}>
+                            {c.name || c.countryname || 'Unnamed Country'}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

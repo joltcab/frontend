@@ -85,7 +85,7 @@ export default function AdminPricingConfiguration() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list()
+    queryFn: () => base44.countries.list()
   });
 
   const { data: cities = [] } = useQuery({
@@ -429,8 +429,8 @@ export default function AdminPricingConfiguration() {
                       </SelectTrigger>
                       <SelectContent>
                         {countries.map(country => (
-                          <SelectItem key={country.id} value={country.id}>
-                            {country.name}
+                          <SelectItem key={String(country.id || country._id)} value={String(country.id || country._id)}>
+                            {country.name || country.countryname || 'Unnamed Country'}
                           </SelectItem>
                         ))}
                       </SelectContent>

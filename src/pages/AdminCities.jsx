@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -34,7 +33,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Building2, Plus, Edit, Trash2, CheckCircle, XCircle,
-  MapPin, Globe, CreditCard, Search, DollarSign, Ruler
+  MapPin, Globe, Search, Ruler
 } from "lucide-react";
 import { motion } from "framer-motion";
 // import { toast } from "react-hot-toast"; // Removed as requested
@@ -76,7 +75,7 @@ export default function AdminCities() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list()
+    queryFn: () => base44.countries.list()
   });
 
   // Save mutation
@@ -397,8 +396,8 @@ export default function AdminCities() {
                       </SelectTrigger>
                       <SelectContent>
                         {countries.map(country => (
-                          <SelectItem key={country.id} value={country.id}>
-                            {country.name}
+                          <SelectItem key={String(country.id || country._id)} value={String(country.id || country._id)}>
+                            {country.name || country.countryname || 'Unnamed Country'}
                           </SelectItem>
                         ))}
                       </SelectContent>

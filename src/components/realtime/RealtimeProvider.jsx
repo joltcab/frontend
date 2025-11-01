@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { base44 } from "@/api/base44Client";
 
 const RealtimeContext = createContext(null);
 

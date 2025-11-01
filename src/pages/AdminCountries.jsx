@@ -76,7 +76,7 @@ export default function AdminCountries() {
   // Fetch countries
   const { data: countries = [], isLoading } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list()
+    queryFn: () => base44.countries.list()
   });
 
   // Create/Update mutation

@@ -30,7 +30,7 @@ export default function BasicSettings() {
 
   const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list(),
+    queryFn: () => base44.countries.list(),
   });
 
   const { data: cities = [], isLoading: isLoadingCities } = useQuery({
@@ -81,7 +81,7 @@ export default function BasicSettings() {
   
   useEffect(() => {
     if (selectedCountryId) {
-      const country = countries.find(c => c.id === selectedCountryId);
+      const country = countries.find(c => String(c.id || c._id) === String(selectedCountryId));
       if (country) {
         setSettings(prev => ({
           ...prev,
@@ -361,8 +361,8 @@ export default function BasicSettings() {
                     </SelectTrigger>
                     <SelectContent>
                       {countries.map(c => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.name}
+                        <SelectItem key={String(c.id || c._id)} value={String(c.id || c._id)}>
+                          {c.name || c.countryname || 'Unnamed Country'}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -42,7 +42,7 @@ export default function DispatchersManagement() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list(),
+    queryFn: () => base44.countries.list(),
   });
 
   // Create/Update dispatcher mutation
@@ -316,8 +316,8 @@ export default function DispatchersManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       {countries.map((country) => (
-                        <SelectItem key={country.id} value={country.name}>
-                          {country.country_code} {country.name}
+                        <SelectItem key={String(country.id || country._id)} value={country.name || country.countryname}>
+                          {country.country_code} {country.name || country.countryname || 'Unnamed Country'}
                         </SelectItem>
                       ))}
                     </SelectContent>

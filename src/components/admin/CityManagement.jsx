@@ -36,7 +36,7 @@ export default function CityManagement() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.entities.Country.list(),
+    queryFn: () => base44.countries.list(),
     staleTime: 0,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -62,8 +62,8 @@ export default function CityManagement() {
 
   useEffect(() => {
     if (selectedCountryId) {
-      const found = Array.isArray(countries) ? countries.find(c => String(c.id) === String(selectedCountryId)) : null;
-      console.log('✅ [CityManagement] selectedCountryId set:', selectedCountryId, found ? `-> ${found.name}` : '');
+      const found = Array.isArray(countries) ? countries.find(c => String(c.id || c._id) === String(selectedCountryId)) : null;
+      console.log('✅ [CityManagement] selectedCountryId set:', selectedCountryId, found ? `-> ${found.name || found.countryname}` : '');
     }
   }, [selectedCountryId, countries]);
 
@@ -321,7 +321,7 @@ export default function CityManagement() {
           const isoCode = city.country_code.toUpperCase();
           const byCode = countries.find(c => (c.alpha2 || c.code || c.country_code || '')?.toUpperCase() === isoCode);
           if (byCode) {
-            setSelectedCountryId(String(byCode.id));
+            setSelectedCountryId(String(byCode.id || byCode._id));
             console.log('🌍 Country auto-selected by ISO:', byCode);
             return;
           }
@@ -331,7 +331,7 @@ export default function CityManagement() {
             return aliasIso && aliasIso.toUpperCase() === isoCode;
           });
           if (byAliasIso) {
-            setSelectedCountryId(String(byAliasIso.id));
+            setSelectedCountryId(String(byAliasIso.id || byAliasIso._id));
             console.log('🌍 Country auto-selected by ISO via alias:', byAliasIso);
             return;
           }
@@ -342,7 +342,7 @@ export default function CityManagement() {
           const target = normalizeCountryName(city.country);
           const byName = countries.find(c => normalizeCountryName(c.name) === target);
           if (byName) {
-            setSelectedCountryId(String(byName.id));
+            setSelectedCountryId(String(byName.id || byName._id));
             console.log('🌍 Country auto-selected by name:', byName);
             return;
           }
@@ -353,7 +353,7 @@ export default function CityManagement() {
             return n.includes(target) || target.includes(n);
           });
           if (byPartial) {
-            setSelectedCountryId(String(byPartial.id));
+            setSelectedCountryId(String(byPartial.id || byPartial._id));
             console.log('🌍 Country auto-selected by partial name:', byPartial);
             return;
           }
@@ -363,7 +363,7 @@ export default function CityManagement() {
           if (derivedIso) {
             const byDerivedIso = countries.find(c => (c.alpha2 || '')?.toUpperCase() === derivedIso);
             if (byDerivedIso) {
-              setSelectedCountryId(String(byDerivedIso.id));
+              setSelectedCountryId(String(byDerivedIso.id || byDerivedIso._id));
               console.log('🌍 Country auto-selected by derived ISO from name:', byDerivedIso);
               return;
             }
@@ -372,7 +372,7 @@ export default function CityManagement() {
               return aliasIso && aliasIso.toUpperCase() === derivedIso;
             });
             if (byDerivedAlias) {
-              setSelectedCountryId(String(byDerivedAlias.id));
+              setSelectedCountryId(String(byDerivedAlias.id || byDerivedAlias._id));
               console.log('🌍 Country auto-selected by derived ISO via country alias:', byDerivedAlias);
               return;
             }
@@ -441,8 +441,8 @@ export default function CityManagement() {
   });
 
   const getCountryName = (countryId) => {
-    const country = countries.find(c => c.id === countryId);
-    return country?.name || "Unknown";
+    const country = countries.find(c => c.id === countryId || c._id === countryId);
+    return country?.name || country?.countryname || "Unknown";
   };
 
   if (isLoading) {
@@ -543,7 +543,7 @@ export default function CityManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       {countries.map(c => (
-                        <SelectItem key={c.id} value={String(c.id)}>
+                        <SelectItem key={String(c.id || c._id)} value={String(c.id || c._id)}>
                           {c.name || c.countryname || 'Unnamed Country'}
                         </SelectItem>
                       ))}
@@ -651,7 +651,9 @@ export default function CityManagement() {
               <SelectContent>
                 <SelectItem value="all">All Countries</SelectItem>
                 {countries.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  <SelectItem key={String(c.id || c._id)} value={String(c.id || c._id)}>
+                    {c.name || c.countryname || 'Unnamed Country'}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

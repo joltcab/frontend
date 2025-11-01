@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,16 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Settings, Globe, DollarSign, Clock, Mail, MessageSquare,
-  Key, Shield, Bell, Palette, Database, Zap, Image as ImageIcon,
-  Smartphone, Upload, Save, Info
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { Settings, Bell, Palette, Smartphone, Upload, Save } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 export default function AdminSettings() {
-  const [user, setUser] = useState(null);
   const [basicSettings, setBasicSettings] = useState({
     countryname: '',
     adminCurrencyCode: '',
@@ -75,25 +69,15 @@ export default function AdminSettings() {
 
   const [countries, setCountries] = useState([]);
   const [timezones, setTimezones] = useState([]);
-  const [logoFiles, setLogoFiles] = useState({});
+  
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    loadUser();
     loadSettings();
     loadCountries();
     loadTimezones();
   }, []);
-
-  const loadUser = async () => {
-    try {
-      const userData = await base44.auth.me();
-      setUser(userData);
-    } catch (error) {
-      console.error('Error loading user:', error);
-    }
-  };
 
   const loadSettings = async () => {
     try {
@@ -160,7 +144,7 @@ export default function AdminSettings() {
 
   const loadCountries = async () => {
     try {
-      const countries = await base44.entities.Country.list();
+      const countries = await base44.countries.list();
       setCountries(countries);
     } catch (error) {
       console.error('Error loading countries:', error);
@@ -294,17 +278,7 @@ export default function AdminSettings() {
   };
 
   // Upload iOS Certificate
-  const uploadCertificateMutation = useMutation({
-    mutationFn: async (formData) => {
-      await base44.functions.invoke('uploadIosCertificate', formData);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Certificate Uploaded",
-        description: "iOS certificates have been updated successfully",
-      });
-    }
-  });
+  
 
   return (
     <div className="space-y-6">
@@ -352,8 +326,8 @@ export default function AdminSettings() {
                     </SelectTrigger>
                     <SelectContent>
                       {countries.map(country => (
-                        <SelectItem key={country.id} value={country.name}>
-                          {country.name}
+                        <SelectItem key={String(country.id || country._id)} value={country.name || country.countryname}>
+                          {country.name || country.countryname || 'Unnamed Country'}
                         </SelectItem>
                       ))}
                     </SelectContent>
