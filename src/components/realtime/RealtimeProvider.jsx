@@ -19,6 +19,7 @@ export function RealtimeProvider({ children }) {
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const DISABLE_REALTIME = import.meta.env.VITE_DISABLE_REALTIME === 'true';
   const WS_BASE_URL = import.meta.env.VITE_WS_URL; // e.g., ws://localhost:5001/api/realtime
+  const MAX_RECONNECT_ATTEMPTS = Number(import.meta.env.VITE_WS_MAX_RECONNECT || 6);
   const IS_LOCALHOST = typeof window !== 'undefined' && (
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1'
@@ -27,7 +28,7 @@ export function RealtimeProvider({ children }) {
   const connect = useCallback(async () => {
     try {
       if (DISABLE_REALTIME || IS_LOCALHOST) {
-        console.warn("Realtime disabled via VITE_DISABLE_REALTIME=true");
+        console.warn("Realtime deshabilitado (VITE_DISABLE_REALTIME=true o entorno local)");
         return;
       }
 
@@ -82,7 +83,13 @@ export function RealtimeProvider({ children }) {
       websocket.onclose = () => {
         console.log("❌ WebSocket disconnected");
         setConnected(false);
-        
+
+        // Stop after max attempts to avoid noisy loops
+        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+          console.warn(`Realtime detenido tras ${reconnectAttempts} intentos. Configure VITE_WS_URL o VITE_DISABLE_REALTIME.`);
+          return;
+        }
+
         // Reconnect with exponential backoff
         const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
         setTimeout(() => {
