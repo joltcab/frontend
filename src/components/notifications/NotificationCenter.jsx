@@ -61,7 +61,7 @@ export default function NotificationCenter() {
     queryKey: ['currentUser'],
     queryFn: async () => {
       try {
-        const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
         console.log('🔔 User loaded:', userData);
         return userData;
       } catch (error) {
@@ -79,7 +79,7 @@ export default function NotificationCenter() {
       
       try {
         console.log('🔔 Fetching notifications for:', user.email);
-        const result = await base44.entities.Notification.filter({
+  const result = await joltcab.entities.Notification.filter({
           user_email: user.email
         });
         
@@ -102,7 +102,7 @@ export default function NotificationCenter() {
   // Mutations
   const markAsReadMutation = useMutation({
     mutationFn: (notificationId) => 
-      base44.entities.Notification.update(notificationId, { is_read: true }),
+  joltcab.entities.Notification.update(notificationId, { is_read: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     }
@@ -112,7 +112,7 @@ export default function NotificationCenter() {
     mutationFn: async () => {
       const unread = notifications.filter(n => !n.is_read);
       await Promise.all(
-        unread.map(n => base44.entities.Notification.update(n.id, { is_read: true }))
+  unread.map(n => joltcab.entities.Notification.update(n.id, { is_read: true }))
       );
     },
     onSuccess: () => {
@@ -122,7 +122,7 @@ export default function NotificationCenter() {
 
   const deleteMutation = useMutation({
     mutationFn: (notificationId) => 
-      base44.entities.Notification.delete(notificationId),
+  joltcab.entities.Notification.delete(notificationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     }

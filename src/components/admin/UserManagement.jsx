@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,14 +19,14 @@ export default function UserManagement() {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['allUsers'],
-    queryFn: () => base44.entities.User.list('-created_date', 100),
+  queryFn: () => joltcab.entities.User.list('-created_date', 100),
   });
 
   // FILTRAR: Solo mostrar users que NO sean admins
   const users = allUsers.filter(user => user.role !== 'admin');
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
+  mutationFn: ({ userId, data }) => joltcab.entities.User.update(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
       setEditDialogOpen(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ export default function TransactionHistory() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -31,14 +31,14 @@ export default function TransactionHistory() {
 
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ['transactions', user?.email],
-    queryFn: () => base44.entities.Transaction.filter({ user_email: user?.email }, '-created_date', 100),
+  queryFn: () => joltcab.entities.Transaction.filter({ user_email: user?.email }, '-created_date', 100),
     enabled: !!user,
   });
 
   const { data: wallet } = useQuery({
     queryKey: ['wallet', user?.email],
     queryFn: async () => {
-      const wallets = await base44.entities.Wallet.filter({ user_email: user?.email });
+  const wallets = await joltcab.entities.Wallet.filter({ user_email: user?.email });
       return wallets[0];
     },
     enabled: !!user,

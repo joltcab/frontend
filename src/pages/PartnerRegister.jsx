@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
+import appConfig from "@/config/app";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,7 @@ export default function PartnerRegister() {
 
   const checkExistingAuth = async () => {
     try {
-      const user = await base44.auth.me();
+  const user = await joltcab.auth.me();
       if (user && user.role === 'partner') {
         window.location.href = createPageUrl('PartnerDashboard');
       }
@@ -59,7 +60,7 @@ export default function PartnerRegister() {
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
     queryFn: async () => {
-      const data = await base44.entities.Country.filter({ business_status: true });
+  const data = await joltcab.entities.Country.filter({ business_status: true });
       return data;
     }
   });
@@ -69,7 +70,7 @@ export default function PartnerRegister() {
     queryKey: ['cities', selectedCountry],
     queryFn: async () => {
       if (!selectedCountry) return [];
-      const data = await base44.entities.City.filter({ 
+  const data = await joltcab.entities.City.filter({
         country_id: selectedCountry,
         business_status: true 
       });
@@ -87,7 +88,7 @@ export default function PartnerRegister() {
       const isEmail = data.email_or_phone.includes('@');
       
       if (isEmail) {
-        await base44.auth.redirectToLogin(createPageUrl('PartnerDashboard'));
+  await joltcab.auth.redirectToLogin(createPageUrl('PartnerDashboard'));
       } else {
         throw new Error('Phone login requires SMS verification');
       }
@@ -125,14 +126,14 @@ export default function PartnerRegister() {
       // Upload ID proof if provided
       let idProofUrl = null;
       if (data.id_proof) {
-        const { file_url } = await base44.integrations.Core.UploadFile({ 
+  const { file_url } = await joltcab.integrations.Core.UploadFile({
           file: data.id_proof 
         });
         idProofUrl = file_url;
       }
 
       // Call backend function to handle registration
-      const result = await base44.functions.invoke('registerPartner', {
+  const result = await joltcab.functions.invoke('registerPartner', {
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
@@ -194,7 +195,7 @@ export default function PartnerRegister() {
           <div className="flex justify-between items-center h-16">
             <a href={createPageUrl('Home')} className="flex items-center gap-2">
               <img
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da8_LogoAppjolt26.png"
+  src={appConfig.logo}
                 alt="JoltCab"
                 className="h-10 w-10 rounded-xl"
               />

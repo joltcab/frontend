@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,16 +15,16 @@ export default function CorporateManagement() {
 
   const { data: corporateProfiles = [] } = useQuery({
     queryKey: ['corporateProfiles'],
-    queryFn: () => base44.entities.CorporateProfile.list('-created_date'),
+    queryFn: () => joltcab.entities.CorporateProfile.list('-created_date'),
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => joltcab.entities.User.list(),
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => base44.entities.CorporateProfile.update(id, { status }),
+    mutationFn: ({ id, status }) => joltcab.entities.CorporateProfile.update(id, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['corporateProfiles'] });
     },

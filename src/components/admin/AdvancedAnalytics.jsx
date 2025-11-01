@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,22 +18,22 @@ export default function AdvancedAnalytics() {
 
   const { data: rides = [] } = useQuery({
     queryKey: ['analyticsRides'],
-    queryFn: () => base44.entities.Ride.list('-created_date', 500),
+    queryFn: () => joltcab.entities.Ride.list('-created_date', 500),
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ['analyticsUsers'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => joltcab.entities.User.list(),
   });
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['analyticsDrivers'],
-    queryFn: () => base44.entities.DriverProfile.list(),
+    queryFn: () => joltcab.entities.DriverProfile.list(),
   });
 
   const { data: transactions = [] } = useQuery({
     queryKey: ['analyticsTransactions'],
-    queryFn: () => base44.entities.Transaction.list('-created_date', 500),
+    queryFn: () => joltcab.entities.Transaction.list('-created_date', 500),
   });
 
   // Calculate date range

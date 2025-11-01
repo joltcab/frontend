@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export default function ProviderManagement() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+      const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error('Error loading user:', error);
@@ -83,12 +83,12 @@ export default function ProviderManagement() {
   const { data: providersData, isLoading } = useQuery({
     queryKey: ['providers', filters],
     queryFn: async () => {
-      const drivers = await base44.entities.DriverProfile.list();
-      const users = await base44.entities.User.list();
-      const vehicles = await base44.entities.Vehicle.list();
-      const documents = await base44.entities.Document.list();
-      const serviceTypes = await base44.entities.ServiceType.list();
-      const wallets = await base44.entities.Wallet.list();
+      const drivers = await joltcab.entities.DriverProfile.list();
+      const users = await joltcab.entities.User.list();
+      const vehicles = await joltcab.entities.Vehicle.list();
+      const documents = await joltcab.entities.Document.list();
+      const serviceTypes = await joltcab.entities.ServiceType.list();
+      const wallets = await joltcab.entities.Wallet.list();
 
       // Merge data
       let providers = drivers.map(driver => {
@@ -204,14 +204,14 @@ export default function ProviderManagement() {
   // Approve provider
   const approveMutation = useMutation({
     mutationFn: async (providerEmail) => {
-      const drivers = await base44.entities.DriverProfile.filter({ user_email: providerEmail });
+      const drivers = await joltcab.entities.DriverProfile.filter({ user_email: providerEmail });
       if (drivers[0]) {
-        await base44.entities.DriverProfile.update(drivers[0].id, {
+        await joltcab.entities.DriverProfile.update(drivers[0].id, {
           background_check_status: 'approved'
         });
       }
       
-      await base44.functions.invoke('sendNotification', {
+      await joltcab.functions.invoke('sendNotification', {
         user_email: providerEmail,
         type: 'info',
         title: '✅ Application Approved',
@@ -231,14 +231,14 @@ export default function ProviderManagement() {
   // Decline provider
   const declineMutation = useMutation({
     mutationFn: async (providerEmail) => {
-      const drivers = await base44.entities.DriverProfile.filter({ user_email: providerEmail });
+      const drivers = await joltcab.entities.DriverProfile.filter({ user_email: providerEmail });
       if (drivers[0]) {
-        await base44.entities.DriverProfile.update(drivers[0].id, {
+        await joltcab.entities.DriverProfile.update(drivers[0].id, {
           background_check_status: 'rejected'
         });
       }
 
-      await base44.functions.invoke('sendNotification', {
+      await joltcab.functions.invoke('sendNotification', {
         user_email: providerEmail,
         type: 'alert',
         title: '❌ Application Declined',
@@ -264,13 +264,13 @@ export default function ProviderManagement() {
         throw new Error('Invalid amount');
       }
 
-      const wallets = await base44.entities.Wallet.filter({ 
+      const wallets = await joltcab.entities.Wallet.filter({ 
         user_email: selectedProvider.email 
       });
 
       let wallet = wallets[0];
       if (!wallet) {
-        wallet = await base44.entities.Wallet.create({
+        wallet = await joltcab.entities.Wallet.create({
           user_email: selectedProvider.email,
           balance: 0,
           currency: 'USD'
@@ -285,11 +285,11 @@ export default function ProviderManagement() {
         throw new Error('Insufficient balance');
       }
 
-      await base44.entities.Wallet.update(wallet.id, {
+      await joltcab.entities.Wallet.update(wallet.id, {
         balance: newBalance
       });
 
-      await base44.entities.Transaction.create({
+      await joltcab.entities.Transaction.create({
         user_email: selectedProvider.email,
         type: walletType === '1' ? 'deposit' : 'withdrawal',
         amount: walletType === '1' ? amount : -amount,
@@ -300,7 +300,7 @@ export default function ProviderManagement() {
         description: `Admin ${walletType === '1' ? 'added' : 'deducted'} funds`
       });
 
-      await base44.functions.invoke('sendNotification', {
+      await joltcab.functions.invoke('sendNotification', {
         user_email: selectedProvider.email,
         type: 'payment',
         title: walletType === '1' ? '💰 Funds Added' : '💸 Funds Deducted',
@@ -330,7 +330,7 @@ export default function ProviderManagement() {
   // Export to Excel
   const handleExportExcel = async () => {
     try {
-      const response = await base44.functions.invoke('generateProviderExcel', {
+      const response = await joltcab.functions.invoke('generateProviderExcel', {
         filters: filters
       });
       

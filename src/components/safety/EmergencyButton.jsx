@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Phone, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ export default function EmergencyButton({ ride, user }) {
       };
 
       // 2. Send emergency alert
-      await base44.functions.invoke('triggerEmergency', {
+  await joltcab.functions.invoke('triggerEmergency', {
         user_email: user.email,
         ride_id: ride?.id,
         location: location,
@@ -44,7 +44,7 @@ export default function EmergencyButton({ ride, user }) {
 
       // 3. Share location with emergency contacts
       if (user.emergency_contact_phone) {
-        await base44.functions.invoke('notifyEmergencyContact', {
+  await joltcab.functions.invoke('notifyEmergencyContact', {
           contact_phone: user.emergency_contact_phone,
           contact_name: user.emergency_contact_name,
           user_name: user.full_name,

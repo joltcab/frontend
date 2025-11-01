@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import joltcab from '@/lib/joltcab-api';
 import { useTranslation } from '@/components/i18n/useTranslation';
 import { useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ export default function MassNotifications() {
 
   const sendNotificationMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await base44.functions.invoke('sendMassNotification', data);
+      const response = await joltcab.functions.invoke('sendMassNotification', data);
       return response.data;
     },
     onSuccess: (data) => {

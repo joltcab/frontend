@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,26 +60,26 @@ export default function AdminPromoCodes() {
   // Fetch data
   const { data: promoCodes = [], isLoading } = useQuery({
     queryKey: ['promo-codes'],
-    queryFn: () => base44.entities.PromoCode.list()
+  queryFn: () => joltcab.entities.PromoCode.list()
   });
 
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['service-types'],
-    queryFn: () => base44.entities.ServiceType.list()
+  queryFn: () => joltcab.entities.ServiceType.list()
   });
 
   const { data: cities = [] } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list()
+  queryFn: () => joltcab.entities.City.list()
   });
 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingPromo) {
-        return await base44.entities.PromoCode.update(editingPromo.id, data);
+  return await joltcab.entities.PromoCode.update(editingPromo.id, data);
       }
-      return await base44.entities.PromoCode.create(data);
+  return await joltcab.entities.PromoCode.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['promo-codes']);
@@ -93,7 +93,7 @@ export default function AdminPromoCodes() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.PromoCode.delete(id),
+  mutationFn: (id) => joltcab.entities.PromoCode.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['promo-codes']);
       alert('Promo code deleted successfully!');

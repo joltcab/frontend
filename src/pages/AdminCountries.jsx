@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,16 +83,16 @@ export default function AdminCountries() {
   // Fetch countries
   const { data: countries = [], isLoading } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list()
+  queryFn: () => joltcab.countries.list()
   });
 
   // Create/Update mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingCountry) {
-        return await base44.entities.Country.update(editingCountry.id, data);
+  return await joltcab.entities.Country.update(editingCountry.id, data);
       }
-      return await base44.entities.Country.create(data);
+  return await joltcab.entities.Country.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['countries']);
@@ -106,7 +106,7 @@ export default function AdminCountries() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Country.delete(id),
+  mutationFn: (id) => joltcab.entities.Country.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['countries']);
       alert('Country deleted successfully!');

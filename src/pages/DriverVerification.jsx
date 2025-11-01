@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import DocumentUploader from "../components/verification/DocumentUploader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +22,7 @@ export default function DriverVerification() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       if (userData.role !== 'driver') {
         window.location.href = createPageUrl('Home');
         return;
@@ -38,20 +38,20 @@ export default function DriverVerification() {
 
   const { data: driverProfile } = useQuery({
     queryKey: ['driverProfile', user?.email],
-    queryFn: () => base44.entities.DriverProfile.filter({ user_email: user.email }),
+  queryFn: () => joltcab.entities.DriverProfile.filter({ user_email: user.email }),
     enabled: !!user,
   });
 
   const { data: documents = [] } = useQuery({
     queryKey: ['driverDocuments', user?.email],
-    queryFn: () => base44.entities.Document.filter({ user_email: user.email }),
+  queryFn: () => joltcab.entities.Document.filter({ user_email: user.email }),
     enabled: !!user,
     refetchInterval: 10000, // Refetch cada 10s
   });
 
   const { data: verificationData } = useQuery({
     queryKey: ['verificationData', user?.email],
-    queryFn: () => base44.entities.VerificationData.filter({ user_email: user.email }),
+  queryFn: () => joltcab.entities.VerificationData.filter({ user_email: user.email }),
     enabled: !!user,
   });
 

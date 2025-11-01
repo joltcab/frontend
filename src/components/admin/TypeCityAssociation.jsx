@@ -1,5 +1,5 @@
 
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,7 +117,7 @@ export default function TypeCityAssociation() {
   const { data: cities = [], isLoading: citiesLoading } = useQuery({
     queryKey: ['cities'],
     queryFn: async () => {
-      const result = await base44.entities.City.list();
+      const result = await joltcab.entities.City.list();
       return result;
     },
   });
@@ -125,7 +125,7 @@ export default function TypeCityAssociation() {
   const { data: serviceTypes = [], isLoading: typesLoading } = useQuery({
     queryKey: ['service-types'],
     queryFn: async () => {
-      const result = await base44.entities.ServiceType.list();
+      const result = await joltcab.entities.ServiceType.list();
       return result;
     }
   });
@@ -133,7 +133,7 @@ export default function TypeCityAssociation() {
   const { data: priceConfigs = [], isLoading: configsLoading } = useQuery({
     queryKey: ['price-configurations'],
     queryFn: async () => {
-      const result = await base44.entities.PriceConfiguration.list();
+      const result = await joltcab.entities.PriceConfiguration.list();
       
       // Remove duplicates based on unique combination of city_id + service_type_id
       const uniqueConfigs = [];
@@ -154,12 +154,12 @@ export default function TypeCityAssociation() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list(),
+    queryFn: () => joltcab.entities.Country.list(),
   });
 
   const { data: zones = [] } = useQuery({
     queryKey: ['zones', selectedCity],
-    queryFn: () => base44.entities.Zone.filter({ city_id: selectedCity }),
+    queryFn: () => joltcab.entities.Zone.filter({ city_id: selectedCity }),
     enabled: !!selectedCity,
   });
 
@@ -306,12 +306,12 @@ export default function TypeCityAssociation() {
 
       if (editingConfig) {
         console.log('✏️ [TypeCity] Updating config ID:', editingConfig.id);
-        const result = await base44.entities.PriceConfiguration.update(editingConfig.id, dataToSubmit);
+      const result = await joltcab.entities.PriceConfiguration.update(editingConfig.id, dataToSubmit);
         console.log('✅ [TypeCity] Update result:', result);
         return result;
       } else {
         console.log('➕ [TypeCity] Creating new config');
-        const result = await base44.entities.PriceConfiguration.create(dataToSubmit);
+      const result = await joltcab.entities.PriceConfiguration.create(dataToSubmit);
         console.log('✅ [TypeCity] Create result:', result);
         return result;
       }

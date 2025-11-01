@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,7 @@ export default function ServiceTypes() {
     queryKey: ['serviceTypes'],
     queryFn: async () => {
       console.log('🚗 [ServiceTypes] Fetching service types...');
-      const result = await base44.entities.ServiceType.list('priority');
+  const result = await joltcab.entities.ServiceType.list('priority');
       console.log('✅ [ServiceTypes] Service types fetched:', result.length);
       console.table(result);
       return result;
@@ -61,7 +61,7 @@ export default function ServiceTypes() {
         throw new Error('Service type with this name already exists');
       }
       
-      const result = await base44.entities.ServiceType.create(data);
+  const result = await joltcab.entities.ServiceType.create(data);
       console.log('✅ [ServiceTypes] Service type created:', result);
       return result;
     },
@@ -80,7 +80,7 @@ export default function ServiceTypes() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       console.log('✏️ [ServiceTypes] Updating service type:', id, data);
-      const result = await base44.entities.ServiceType.update(id, data);
+  const result = await joltcab.entities.ServiceType.update(id, data);
       console.log('✅ [ServiceTypes] Service type updated:', result);
       return result;
     },
@@ -99,7 +99,7 @@ export default function ServiceTypes() {
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       console.log('🗑️ [ServiceTypes] Deleting service type:', id);
-      await base44.entities.ServiceType.delete(id);
+  await joltcab.entities.ServiceType.delete(id);
     },
     onSuccess: () => {
       console.log('🔄 [ServiceTypes] Invalidating queries after delete');
@@ -114,11 +114,11 @@ export default function ServiceTypes() {
       // Unset all defaults first
       for (const type of serviceTypes) {
         if (type.id !== id && type.default_selected) {
-          await base44.entities.ServiceType.update(type.id, { default_selected: false });
+  await joltcab.entities.ServiceType.update(type.id, { default_selected: false });
         }
       }
       // Set new default
-      await base44.entities.ServiceType.update(id, { default_selected: true });
+  await joltcab.entities.ServiceType.update(id, { default_selected: true });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['serviceTypes'] });
@@ -127,7 +127,7 @@ export default function ServiceTypes() {
 
   const changePriorityMutation = useMutation({
     mutationFn: async ({ id, newPriority }) => {
-      await base44.entities.ServiceType.update(id, { priority: newPriority });
+  await joltcab.entities.ServiceType.update(id, { priority: newPriority });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['serviceTypes'] });
@@ -202,7 +202,7 @@ export default function ServiceTypes() {
       uploadFormData.append('file', file);
       uploadFormData.append('folder', 'service-types');
       
-      const { data } = await base44.functions.invoke('r2Upload', uploadFormData);
+  const { data } = await joltcab.functions.invoke('r2Upload', uploadFormData);
       
       if (!data.success) {
         throw new Error('Failed to upload to R2');

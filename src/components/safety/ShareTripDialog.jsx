@@ -10,7 +10,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Share2, Copy, Check } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 
 export default function ShareTripDialog({ ride, open, onOpenChange }) {
   const [copied, setCopied] = useState(false);
@@ -33,7 +33,7 @@ export default function ShareTripDialog({ ride, open, onOpenChange }) {
 
     setSending(true);
     try {
-      await base44.functions.invoke('sendTripShareSMS', {
+  await joltcab.functions.invoke('sendTripShareSMS', {
         phone: phoneNumber,
         tracking_url: trackingUrl,
         passenger_name: ride?.passenger_email,

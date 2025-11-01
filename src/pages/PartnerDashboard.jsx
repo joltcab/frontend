@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export default function PartnerDashboard() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       
       if (userData.role !== 'partner') {
@@ -30,7 +30,7 @@ export default function PartnerDashboard() {
       }
 
       // Load partner profile
-      const profiles = await base44.entities.PartnerProfile.filter({
+  const profiles = await joltcab.entities.PartnerProfile.filter({
         user_email: userData.email
       });
       
@@ -48,7 +48,7 @@ export default function PartnerDashboard() {
   const { data: drivers = [] } = useQuery({
     queryKey: ['partnerDrivers', user?.email],
     queryFn: async () => {
-      const allDrivers = await base44.entities.DriverProfile.filter({});
+  const allDrivers = await joltcab.entities.DriverProfile.filter({});
       // Filter drivers that belong to this partner
       return allDrivers.filter(d => d.partner_email === user?.email);
     },
@@ -59,7 +59,7 @@ export default function PartnerDashboard() {
   const { data: vehicles = [] } = useQuery({
     queryKey: ['partnerVehicles', user?.email],
     queryFn: async () => {
-      const allVehicles = await base44.entities.Vehicle.filter({});
+  const allVehicles = await joltcab.entities.Vehicle.filter({});
       // Filter vehicles through drivers
       const driverEmails = drivers.map(d => d.user_email);
       return allVehicles.filter(v => driverEmails.includes(v.driver_email));
@@ -71,7 +71,7 @@ export default function PartnerDashboard() {
   const { data: rides = [] } = useQuery({
     queryKey: ['partnerRides', user?.email],
     queryFn: async () => {
-      const allRides = await base44.entities.Ride.filter({});
+  const allRides = await joltcab.entities.Ride.filter({});
       const driverEmails = drivers.map(d => d.user_email);
       return allRides.filter(r => driverEmails.includes(r.driver_email));
     },

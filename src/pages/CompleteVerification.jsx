@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -41,7 +41,7 @@ export default function CompleteVerification() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
 
       // Redirect if not a driver
@@ -57,7 +57,7 @@ export default function CompleteVerification() {
   const { data: driverProfile } = useQuery({
     queryKey: ["driverProfile", user?.email],
     queryFn: async () => {
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: user.email });
+  const profiles = await joltcab.entities.DriverProfile.filter({ user_email: user.email });
       return profiles[0] || null;
     },
     enabled: !!user,
@@ -66,7 +66,7 @@ export default function CompleteVerification() {
   // Fetch documents
   const { data: documents = [] } = useQuery({
     queryKey: ["documents", user?.email],
-    queryFn: () => base44.entities.Document.filter({ user_email: user.email }),
+  queryFn: () => joltcab.entities.Document.filter({ user_email: user.email }),
     enabled: !!user,
   });
 

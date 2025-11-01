@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,14 +24,14 @@ export default function UserImpersonation() {
 
   const { data: users = [] } = useQuery({
     queryKey: ['allUsers'],
-    queryFn: () => base44.entities.User.list('-created_date', 100),
+  queryFn: () => joltcab.entities.User.list('-created_date', 100),
   });
 
   const { data: activeSession } = useQuery({
     queryKey: ['activeImpersonation'],
     queryFn: async () => {
-      const sessions = await base44.entities.AdminImpersonation.filter({ 
-        admin_email: (await base44.auth.me()).email,
+  const sessions = await joltcab.entities.AdminImpersonation.filter({
+  admin_email: (await joltcab.auth.me()).email,
         status: 'verified'
       }, '-created_date', 1);
       
@@ -49,7 +49,7 @@ export default function UserImpersonation() {
 
   const requestAccessMutation = useMutation({
     mutationFn: async (data) => {
-      const { data: result } = await base44.functions.invoke('requestUserAccess', data);
+  const { data: result } = await joltcab.functions.invoke('requestUserAccess', data);
       return result;
     },
     onSuccess: (data) => {
@@ -67,7 +67,7 @@ export default function UserImpersonation() {
 
   const verifyAccessMutation = useMutation({
     mutationFn: async (data) => {
-      const { data: result } = await base44.functions.invoke('verifyUserAccess', data);
+  const { data: result } = await joltcab.functions.invoke('verifyUserAccess', data);
       return result;
     },
     onSuccess: (data) => {
@@ -81,7 +81,7 @@ export default function UserImpersonation() {
 
   const endAccessMutation = useMutation({
     mutationFn: async (impersonationId) => {
-      const { data } = await base44.functions.invoke('endUserAccess', {
+  const { data } = await joltcab.functions.invoke('endUserAccess', {
         impersonation_id: impersonationId
       });
       return data;

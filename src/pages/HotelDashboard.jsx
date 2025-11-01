@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,7 @@ export default function HotelDashboard() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -26,7 +26,7 @@ export default function HotelDashboard() {
 
   const { data: hotelProfile } = useQuery({
     queryKey: ["hotelProfile"],
-    queryFn: () => base44.entities.HotelProfile.filter({ user_email: user?.email }),
+  queryFn: () => joltcab.entities.HotelProfile.filter({ user_email: user?.email }),
     enabled: !!user,
   });
 

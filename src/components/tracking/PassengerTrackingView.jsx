@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import LiveTrackingMap from "./LiveTrackingMap";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +14,7 @@ export default function PassengerTrackingView({ ride }) {
   const { data: driverProfile } = useQuery({
     queryKey: ['driverProfile', ride.driver_email],
     queryFn: async () => {
-      const profiles = await base44.entities.DriverProfile.filter({ 
+  const profiles = await joltcab.entities.DriverProfile.filter({
         user_email: ride.driver_email 
       });
       return profiles[0];
@@ -26,7 +26,7 @@ export default function PassengerTrackingView({ ride }) {
   useQuery({
     queryKey: ['driverLocation', ride.id],
     queryFn: async () => {
-      const updatedRide = await base44.entities.Ride.filter({ id: ride.id });
+  const updatedRide = await joltcab.entities.Ride.filter({ id: ride.id });
       if (updatedRide[0] && updatedRide[0].driver_current_lat) {
         const location = {
           lat: updatedRide[0].driver_current_lat,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,11 +14,11 @@ export default function ServiceProviders() {
 
   const { data: drivers = [] } = useQuery({
     queryKey: ['allDrivers'],
-    queryFn: () => base44.entities.DriverProfile.list('-created_date', 200),
+  queryFn: () => joltcab.entities.DriverProfile.list('-created_date', 200),
   });
 
   const updateDriverMutation = useMutation({
-    mutationFn: ({ driverId, data }) => base44.entities.DriverProfile.update(driverId, data),
+  mutationFn: ({ driverId, data }) => joltcab.entities.DriverProfile.update(driverId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allDrivers'] });
     },

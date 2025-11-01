@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,21 +26,21 @@ export default function BlogPost() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.list(),
+    queryFn: () => joltcab.entities.Category.list(),
   });
 
   const { data: tags = [] } = useQuery({
     queryKey: ['tags'],
-    queryFn: () => base44.entities.Tag.list(),
+    queryFn: () => joltcab.entities.Tag.list(),
   });
 
   const { data: allPosts = [] } = useQuery({
     queryKey: ['allPosts'],
-    queryFn: () => base44.entities.BlogPost.filter({ status: 'published' }),
+    queryFn: () => joltcab.entities.BlogPost.filter({ status: 'published' }),
   });
 
   const updateViewsMutation = useMutation({
-    mutationFn: ({ id, views }) => base44.entities.BlogPost.update(id, { views: views + 1 }),
+    mutationFn: ({ id, views }) => joltcab.entities.BlogPost.update(id, { views: views + 1 }),
   });
 
   useEffect(() => {

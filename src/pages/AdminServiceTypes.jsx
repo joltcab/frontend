@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,16 +58,16 @@ export default function AdminServiceTypes() {
   // Fetch service types
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['service-types'],
-    queryFn: () => base44.entities.ServiceType.list()
+    queryFn: () => joltcab.entities.ServiceType.list()
   });
 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingService) {
-        return await base44.entities.ServiceType.update(editingService.id, data);
+        return await joltcab.entities.ServiceType.update(editingService.id, data);
       }
-      return await base44.entities.ServiceType.create(data);
+      return await joltcab.entities.ServiceType.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['service-types']);
@@ -81,7 +81,7 @@ export default function AdminServiceTypes() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.ServiceType.delete(id),
+    mutationFn: (id) => joltcab.entities.ServiceType.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['service-types']);
       alert('Service type deleted successfully!');

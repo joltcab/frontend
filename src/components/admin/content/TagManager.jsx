@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +16,11 @@ export default function TagManager() {
 
   const { data: tags = [], isLoading } = useQuery({
     queryKey: ['tags'],
-    queryFn: () => base44.entities.Tag.list(),
+  queryFn: () => joltcab.entities.Tag.list(),
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Tag.create(data),
+  mutationFn: (data) => joltcab.entities.Tag.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
       setIsDialogOpen(false);
@@ -29,7 +29,7 @@ export default function TagManager() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Tag.update(id, data),
+  mutationFn: ({ id, data }) => joltcab.entities.Tag.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
       setIsDialogOpen(false);
@@ -38,7 +38,7 @@ export default function TagManager() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Tag.delete(id),
+  mutationFn: (id) => joltcab.entities.Tag.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tags'] }),
   });
 

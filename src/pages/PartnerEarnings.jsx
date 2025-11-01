@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -35,7 +35,7 @@ export default function PartnerEarnings() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       
       if (userData.role !== 'partner') {
@@ -43,7 +43,7 @@ export default function PartnerEarnings() {
         return;
       }
 
-      const profiles = await base44.entities.PartnerProfile.filter({
+  const profiles = await joltcab.entities.PartnerProfile.filter({
         user_email: userData.email
       });
       
@@ -59,7 +59,7 @@ export default function PartnerEarnings() {
   const { data: drivers = [] } = useQuery({
     queryKey: ['partnerDrivers', user?.email],
     queryFn: async () => {
-      const allDrivers = await base44.entities.DriverProfile.filter({});
+  const allDrivers = await joltcab.entities.DriverProfile.filter({});
       return allDrivers.filter(d => d.partner_email === user?.email);
     },
     enabled: !!user,
@@ -69,7 +69,7 @@ export default function PartnerEarnings() {
   const { data: allRides = [], isLoading } = useQuery({
     queryKey: ['partnerRides', drivers],
     queryFn: async () => {
-      const rides = await base44.entities.Ride.filter({ status: 'completed' });
+  const rides = await joltcab.entities.Ride.filter({ status: 'completed' });
       const driverEmails = drivers.map(d => d.user_email);
       return rides.filter(r => driverEmails.includes(r.driver_email));
     },

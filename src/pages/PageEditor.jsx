@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,9 +61,9 @@ function PageForm({ page, authorEmail, onSuccess }) {
   const saveMutation = useMutation({
     mutationFn: (data) => {
       if (page?.id) {
-        return base44.entities.CustomPage.update(page.id, data);
+  return joltcab.entities.CustomPage.update(page.id, data);
       } else {
-        return base44.entities.CustomPage.create(data);
+  return joltcab.entities.CustomPage.create(data);
       }
     },
     onSuccess: (data) => {
@@ -91,8 +91,8 @@ function PageForm({ page, authorEmail, onSuccess }) {
 
     setUploading(true);
     try {
-      // Assuming base44.storage.uploadFile returns a URL or path
-      const result = await base44.storage.uploadFile(file); // Adjust as per actual base44 API
+  // Upload via integrations
+  const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, featured_image: result.url || result.path })); // Or however the URL is returned
       alert("Image uploaded successfully!");
     } catch (error) {
@@ -343,7 +343,7 @@ export default function PageEditor() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       window.location.href = createPageUrl("Home"); // Redirect on auth failure
@@ -352,7 +352,7 @@ export default function PageEditor() {
 
   const loadPage = async (id) => {
     try {
-      const pages = await base44.entities.CustomPage.list();
+  const pages = await joltcab.entities.CustomPage.list();
       const page = pages.find(p => p.id === id);
       if (page) {
         setPageData(page);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +20,7 @@ export default function DriverDashboard() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       setIsLoading(false);
     } catch (error) {
@@ -32,7 +32,7 @@ export default function DriverDashboard() {
   const { data: driverProfile } = useQuery({
     queryKey: ["driverProfile", user?.email],
     queryFn: async () => {
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: user?.email });
+  const profiles = await joltcab.entities.DriverProfile.filter({ user_email: user?.email });
       return profiles[0] || null;
     },
     enabled: !!user,
@@ -40,7 +40,7 @@ export default function DriverDashboard() {
 
   const { data: rides = [] } = useQuery({
     queryKey: ["driverRides", user?.email],
-    queryFn: () => base44.entities.Ride.filter({ driver_email: user?.email }, "-created_date", 10),
+  queryFn: () => joltcab.entities.Ride.filter({ driver_email: user?.email }, "-created_date", 10),
     enabled: !!user,
   });
 

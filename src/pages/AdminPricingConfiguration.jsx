@@ -1,5 +1,5 @@
 
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,31 +83,31 @@ export default function AdminPricingConfiguration() {
   // Fetch data
   const { data: priceConfigs = [], isLoading } = useQuery({
     queryKey: ['price-configurations'],
-    queryFn: () => base44.entities.PriceConfiguration.list()
+  queryFn: () => joltcab.entities.PriceConfiguration.list()
   });
 
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['service-types'],
-    queryFn: () => base44.entities.ServiceType.list()
+  queryFn: () => joltcab.entities.ServiceType.list()
   });
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list()
+  queryFn: () => joltcab.countries.list()
   });
 
   const { data: cities = [] } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list()
+  queryFn: () => joltcab.entities.City.list()
   });
 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingConfig) {
-        return await base44.entities.PriceConfiguration.update(editingConfig.id, data);
+  return await joltcab.entities.PriceConfiguration.update(editingConfig.id, data);
       }
-      return await base44.entities.PriceConfiguration.create(data);
+  return await joltcab.entities.PriceConfiguration.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['price-configurations']);
@@ -121,7 +121,7 @@ export default function AdminPricingConfiguration() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.PriceConfiguration.delete(id),
+  mutationFn: (id) => joltcab.entities.PriceConfiguration.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['price-configurations']);
       alert('Pricing configuration deleted successfully!');

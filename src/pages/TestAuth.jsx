@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ export default function TestAuth() {
     try {
       addResult("🔧 Creating Test Users", "running", "Calling backend function...");
 
-      const response = await base44.functions.invoke('createTestUsers', {});
+  const response = await joltcab.functions.invoke('createTestUsers', {});
       
       if (response.data.success) {
         addResult("✅ Test Users", "success", response.data.message, response.data.results);
@@ -63,8 +63,8 @@ export default function TestAuth() {
     setLoading(true);
     try {
       addResult("Login", "running", `Trying to login as ${email}...`);
-      await base44.auth.login(email, password);
-      const user = await base44.auth.me();
+  await joltcab.auth.login(email, password);
+  const user = await joltcab.auth.me();
       setCurrentUser(user);
       addResult("Login", "success", "Logged in successfully!", user);
       
@@ -102,24 +102,24 @@ export default function TestAuth() {
       addResult("Register", "running", "Registering new user...");
       
       // Registrar con Base44
-      await base44.auth.register(email, password);
+  await joltcab.auth.register(email, password);
       addResult("Register", "success", "Registration successful!");
       
       // Login
       addResult("Login", "running", "Logging in...");
-      await base44.auth.login(email, password);
+  await joltcab.auth.login(email, password);
       addResult("Login", "success", "Login successful!");
       
       // Actualizar perfil
       addResult("Profile", "running", "Updating profile...");
-      await base44.auth.updateMe({
+  await joltcab.auth.updateMe({
         full_name: "Test User",
         role: "user",
         phone: "+1234567890",
         status: "active"
       });
       
-      const user = await base44.auth.me();
+  const user = await joltcab.auth.me();
       setCurrentUser(user);
       addResult("Profile", "success", "Profile updated!", user);
       

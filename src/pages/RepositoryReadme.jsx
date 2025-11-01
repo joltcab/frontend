@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Download, Folder, FileCode, Smartphone, Server, 
+  Download, FileCode, Smartphone, Server, 
   GitBranch, Package, BookOpen, Copy, CheckCircle 
 } from "lucide-react";
 
@@ -445,9 +445,9 @@ cd android && ./gradlew assembleRelease
    - Get from: https://platform.openai.com/api-keys
    - Keys needed: OPENAI_API_KEY
 
-5. **Base44** (backend platform)
-   - Get from: https://base44.com
-   - Keys needed: BASE44_APP_ID, BASE44_SERVICE_ROLE_KEY
+5. **JoltCab Cloud** (backend platform)
+   - Get from: https://admin.joltcab.com
+   - Managed via Admin; no Base44 keys required
 
 6. **Cloudflare R2** (file storage)
    - Get from: https://dash.cloudflare.com
@@ -460,7 +460,7 @@ cd android && ./gradlew assembleRelease
 ## 📦 Database Schema
 
 All database tables are defined in the \`entities/\` folder as JSON schemas.
-They will be automatically created when you deploy to Base44.
+They are managed by JoltCab Cloud and created on first run.
 
 Key entities:
 - User (authentication & profiles)
@@ -678,7 +678,7 @@ Proprietary - All Rights Reserved
                     </h4>
                     <ol className="list-decimal list-inside space-y-2 text-blue-800">
                       <li>Go to Base44 Dashboard → Code tab</li>
-                      <li>Click "Export Project"</li>
+                      <li>Click &quot;Export Project&quot;</li>
                       <li>Download the complete source code as .zip</li>
                       <li>Extract and follow setup instructions above</li>
                     </ol>
@@ -711,7 +711,7 @@ Proprietary - All Rights Reserved
                 </div>
 
                 <div className="border-t-2 pt-6">
-                  <h3 className="font-bold text-gray-900 mb-4">What You'll Get:</h3>
+                  <h3 className="font-bold text-gray-900 mb-4">What You&apos;ll Get:</h3>
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="bg-white border-2 border-gray-200 rounded-xl p-4">
                       <Server className="w-8 h-8 text-blue-600 mb-2" />
@@ -758,7 +758,7 @@ Proprietary - All Rights Reserved
             <Button
               size="lg"
               className="bg-[#15B46A] hover:bg-[#0F9456]"
-              onClick={() => window.open('https://base44.com/dashboard', '_blank')}
+              onClick={() => window.open('https://admin.joltcab.com/', '_blank')}
             >
               <Download className="w-5 h-5 mr-2" />
               Export from Dashboard

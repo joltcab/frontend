@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,25 +71,25 @@ export default function PriceConfigurationForm() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list(),
+    queryFn: () => joltcab.entities.Country.list(),
     enabled: !backendDisabled,
   });
 
   const { data: cities = [] } = useQuery({
     queryKey: ['cities', selectedCountry],
-    queryFn: () => base44.entities.City.filter({ country_id: selectedCountry }),
+    queryFn: () => joltcab.entities.City.filter({ country_id: selectedCountry }),
     enabled: !!selectedCountry && !backendDisabled,
   });
 
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['serviceTypes'],
-    queryFn: () => base44.entities.ServiceType.list(),
+    queryFn: () => joltcab.entities.ServiceType.list(),
     enabled: !backendDisabled,
   });
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.entities.PriceConfiguration.create(data);
+      return await joltcab.entities.PriceConfiguration.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['price-configurations'] });

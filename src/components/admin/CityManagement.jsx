@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,7 @@ export default function CityManagement() {
     queryKey: ['cities'],
     queryFn: async () => {
       console.log('🏙️ [CityManagement] Fetching cities...');
-      const result = await base44.entities.City.list('-created_date');
+      const result = await joltcab.entities.City.list('-created_date');
       console.log('✅ [CityManagement] Cities fetched:', result.length);
       console.table(result);
       return result;
@@ -36,7 +36,7 @@ export default function CityManagement() {
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list(),
+    queryFn: () => joltcab.entities.Country.list(),
     staleTime: 0,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -70,7 +70,7 @@ export default function CityManagement() {
   const createMutation = useMutation({
     mutationFn: async (data) => {
       console.log('➕ [CityManagement] Creating city:', data);
-      const result = await base44.entities.City.create(data);
+      const result = await joltcab.entities.City.create(data);
       console.log('✅ [CityManagement] City created:', result);
       return result;
     },
@@ -92,7 +92,7 @@ export default function CityManagement() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       console.log('✏️ [CityManagement] Updating city:', id, data);
-      const result = await base44.entities.City.update(id, data);
+      const result = await joltcab.entities.City.update(id, data);
       console.log('✅ [CityManagement] City updated:', result);
       return result;
     },
@@ -114,7 +114,7 @@ export default function CityManagement() {
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       console.log('🗑️ [CityManagement] Deleting city:', id);
-      await base44.entities.City.delete(id);
+      await joltcab.entities.City.delete(id);
     },
     onSuccess: () => {
       console.log('🔄 [CityManagement] Invalidating queries after delete');
@@ -135,7 +135,7 @@ export default function CityManagement() {
     setSearchingCities(true);
     
     try {
-      const response = await base44.functions.invoke('geocodeAddress', {
+      const response = await joltcab.functions.invoke('geocodeAddress', {
         address: query,
         language: 'en'
       });

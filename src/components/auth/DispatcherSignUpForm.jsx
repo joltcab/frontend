@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Loader2, AlertCircle, CheckCircle, Radio, User, Phone, Mail, Lock } from "lucide-react";
 import { createPageUrl } from "@/utils";
 
@@ -64,25 +64,25 @@ export default function DispatcherSignUpForm({ onSuccess }) {
     setLoading(true);
 
     try {
-      await base44.auth.register({
+      await joltcab.auth.register({
         email: formData.email.trim(),
         password: formData.password,
         full_name: formData.full_name.trim(),
       });
 
-      await base44.auth.updateMe({
+      await joltcab.auth.updateMe({
         phone: formData.phone.trim(),
         role: "dispatcher",
         status: "pending",
       });
 
-      await base44.entities.DispatcherProfile.create({
+      await joltcab.entities.DispatcherProfile.create({
         user_email: formData.email.trim(),
         dispatcher_name: formData.dispatcher_name.trim(),
         status: "pending",
       });
 
-      await base44.entities.VerificationData.create({
+      await joltcab.entities.VerificationData.create({
         user_email: formData.email.trim(),
         email_verified: false,
         phone_verified: false,
@@ -91,7 +91,7 @@ export default function DispatcherSignUpForm({ onSuccess }) {
       });
 
       try {
-        await base44.functions.invoke('sendNotification', {
+        await joltcab.functions.invoke('sendNotification', {
           user_email: formData.email.trim(),
           type: 'info',
           title: '📡 Welcome to JoltCab Dispatchers!',

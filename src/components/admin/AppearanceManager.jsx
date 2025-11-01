@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
+import appConfig from "@/config/app";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ export default function AppearanceManager() {
 
   const { data: appearanceConfigs = [] } = useQuery({
     queryKey: ['appearanceSettings'],
-    queryFn: () => base44.entities.AppearanceSettings.list(),
+    queryFn: () => joltcab.entities.AppearanceSettings.list(),
   });
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function AppearanceManager() {
       const general = appearanceConfigs.find(c => c.section === 'general') || {};
       
       setHeaderSettings({
-        logo_url: header.logo_url || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da3_LogoAppjolt26.png',
+        logo_url: header.logo_url || appConfig.logo,
         site_name: header.site_name || 'JoltCab',
         tagline: header.tagline || 'Your ride, your price',
         menu_items: header.menu_items || []
@@ -57,9 +58,9 @@ export default function AppearanceManager() {
     mutationFn: async (data) => {
       const existing = appearanceConfigs.find(c => c.section === data.section);
       if (existing) {
-        return base44.entities.AppearanceSettings.update(existing.id, data);
+        return joltcab.entities.AppearanceSettings.update(existing.id, data);
       } else {
-        return base44.entities.AppearanceSettings.create(data);
+        return joltcab.entities.AppearanceSettings.create(data);
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['appearanceSettings'] }),
@@ -85,7 +86,7 @@ export default function AppearanceManager() {
 
     setUploadingLogo(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       setHeaderSettings(prev => ({ ...prev, logo_url: file_url }));
       alert("✓ Logo uploaded! Click 'Save Header' to apply changes.");
     } catch (error) {

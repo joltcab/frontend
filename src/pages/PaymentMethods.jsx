@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export default function PaymentMethods() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -28,12 +28,12 @@ export default function PaymentMethods() {
 
   const { data: paymentMethods = [], isLoading } = useQuery({
     queryKey: ['paymentMethods', user?.email],
-    queryFn: () => base44.entities.PaymentMethod.filter({ user_email: user?.email }),
+  queryFn: () => joltcab.entities.PaymentMethod.filter({ user_email: user?.email }),
     enabled: !!user,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.PaymentMethod.delete(id),
+  mutationFn: (id) => joltcab.entities.PaymentMethod.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentMethods'] });
     },
@@ -44,11 +44,11 @@ export default function PaymentMethods() {
       // Primero quitar default de todos
       for (const method of paymentMethods) {
         if (method.is_default) {
-          await base44.entities.PaymentMethod.update(method.id, { is_default: false });
+  await joltcab.entities.PaymentMethod.update(method.id, { is_default: false });
         }
       }
       // Luego establecer el nuevo default
-      await base44.entities.PaymentMethod.update(methodId, { is_default: true });
+  await joltcab.entities.PaymentMethod.update(methodId, { is_default: true });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentMethods'] });

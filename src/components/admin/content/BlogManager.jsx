@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,16 +32,16 @@ export default function BlogManager() {
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['blogPosts'],
-    queryFn: () => base44.entities.BlogPost.list('-created_date'),
+    queryFn: () => joltcab.entities.BlogPost.list('-created_date'),
   });
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.filter({ type: 'blog' }),
+    queryFn: () => joltcab.entities.Category.filter({ type: 'blog' }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.BlogPost.delete(id),
+    mutationFn: (id) => joltcab.entities.BlogPost.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
     },
@@ -220,7 +220,7 @@ function BlogPostForm({ post, categories, onSuccess }) {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+      const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error('Error loading user');
@@ -251,7 +251,7 @@ function BlogPostForm({ post, categories, onSuccess }) {
 
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, featured_image: file_url }));
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -268,9 +268,9 @@ function BlogPostForm({ post, categories, onSuccess }) {
       };
 
       if (post) {
-        return base44.entities.BlogPost.update(post.id, postData);
+        return joltcab.entities.BlogPost.update(post.id, postData);
       } else {
-        return base44.entities.BlogPost.create(postData);
+        return joltcab.entities.BlogPost.create(postData);
       }
     },
     onSuccess: () => {

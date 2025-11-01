@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation } from "@tanstack/react-query";
 
 /**
@@ -14,9 +14,9 @@ export default function DriverLocationTracker({ driverEmail, isOnline, activeRid
   const updateLocationMutation = useMutation({
     mutationFn: async (locationData) => {
       // Update driver profile with current location
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: driverEmail });
+  const profiles = await joltcab.entities.DriverProfile.filter({ user_email: driverEmail });
       if (profiles[0]) {
-        await base44.entities.DriverProfile.update(profiles[0].id, {
+  await joltcab.entities.DriverProfile.update(profiles[0].id, {
           current_lat: locationData.lat,
           current_lng: locationData.lng,
           last_location_update: new Date().toISOString(),
@@ -25,7 +25,7 @@ export default function DriverLocationTracker({ driverEmail, isOnline, activeRid
 
       // If there's an active ride, update ride location too
       if (activeRideId) {
-        await base44.entities.Ride.update(activeRideId, {
+  await joltcab.entities.Ride.update(activeRideId, {
           driver_current_lat: locationData.lat,
           driver_current_lng: locationData.lng,
         });

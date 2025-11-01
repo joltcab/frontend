@@ -31,7 +31,7 @@ export default function PartnerReferrals() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       
       if (userData.role !== 'partner') {
@@ -39,7 +39,7 @@ export default function PartnerReferrals() {
         return;
       }
 
-      const profiles = await base44.entities.PartnerProfile.filter({
+  const profiles = await joltcab.entities.PartnerProfile.filter({
         user_email: userData.email
       });
       
@@ -57,7 +57,7 @@ export default function PartnerReferrals() {
   const { data: referredDrivers = [] } = useQuery({
     queryKey: ['referredDrivers', user?.email],
     queryFn: async () => {
-      const allDrivers = await base44.entities.DriverProfile.filter({});
+  const allDrivers = await joltcab.entities.DriverProfile.filter({});
       // Filter drivers that used this partner's referral code
       return allDrivers.filter(d => d.referred_by === profile?.referral_code);
     },

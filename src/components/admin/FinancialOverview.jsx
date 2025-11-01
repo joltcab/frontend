@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export default function FinancialOverview({ stats }) {
 
   const { data: transactions = [] } = useQuery({
     queryKey: ['allTransactions'],
-    queryFn: () => base44.entities.Transaction.list('-created_date', 200),
+    queryFn: () => joltcab.entities.Transaction.list('-created_date', 200),
   });
 
   // Calculate financial metrics

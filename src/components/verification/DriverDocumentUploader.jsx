@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,7 @@ export default function DriverDocumentUploader({ userEmail, onComplete }) {
   // Fetch existing documents
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ["driverDocuments", userEmail],
-    queryFn: () => base44.entities.Document.filter({ user_email: userEmail }),
+  queryFn: () => joltcab.entities.Document.filter({ user_email: userEmail }),
     enabled: !!userEmail,
   });
 
@@ -73,7 +73,7 @@ export default function DriverDocumentUploader({ userEmail, onComplete }) {
   const { data: verificationData } = useQuery({
     queryKey: ["verificationData", userEmail],
     queryFn: async () => {
-      const data = await base44.entities.VerificationData.filter({ user_email: userEmail });
+  const data = await joltcab.entities.VerificationData.filter({ user_email: userEmail });
       return data[0] || null;
     },
     enabled: !!userEmail,
@@ -87,7 +87,7 @@ export default function DriverDocumentUploader({ userEmail, onComplete }) {
       formData.append("document_type", document_type);
       formData.append("user_email", userEmail);
 
-      const { data } = await base44.functions.invoke("uploadDocument", formData);
+  const { data } = await joltcab.functions.invoke("uploadDocument", formData);
       return data;
     },
     onSuccess: () => {
@@ -100,7 +100,7 @@ export default function DriverDocumentUploader({ userEmail, onComplete }) {
   // AI Verify Selfie mutation
   const verifySelfieMutation = useMutation({ // Fixed variable name: removed space
     mutationFn: async (documentId) => {
-      const { data } = await base44.functions.invoke("verifySelfieID", {
+  const { data } = await joltcab.functions.invoke("verifySelfieID", {
         selfie_document_id: documentId,
       });
       return data;

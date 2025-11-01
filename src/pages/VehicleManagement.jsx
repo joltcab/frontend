@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,7 +52,7 @@ export default function VehicleManagement() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -62,23 +62,23 @@ export default function VehicleManagement() {
   // Fetch vehicles
   const { data: vehicles = [], isLoading } = useQuery({
     queryKey: ["vehicles", user?.email],
-    queryFn: () => base44.entities.Vehicle.filter({ driver_email: user.email }),
+  queryFn: () => joltcab.entities.Vehicle.filter({ driver_email: user.email }),
     enabled: !!user,
   });
 
   // Fetch service types
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ["serviceTypes"],
-    queryFn: () => base44.entities.ServiceType.filter({ business_status: true }),
+  queryFn: () => joltcab.entities.ServiceType.filter({ business_status: true }),
   });
 
   // Add/Update vehicle mutation
   const vehicleMutation = useMutation({
     mutationFn: async (vehicleData) => {
       if (editingVehicle) {
-        return base44.entities.Vehicle.update(editingVehicle.id, vehicleData);
+  return joltcab.entities.Vehicle.update(editingVehicle.id, vehicleData);
       } else {
-        return base44.entities.Vehicle.create(vehicleData);
+  return joltcab.entities.Vehicle.create(vehicleData);
       }
     },
     onSuccess: () => {
@@ -90,7 +90,7 @@ export default function VehicleManagement() {
 
   // Delete vehicle mutation
   const deleteMutation = useMutation({
-    mutationFn: (vehicleId) => base44.entities.Vehicle.delete(vehicleId),
+  mutationFn: (vehicleId) => joltcab.entities.Vehicle.delete(vehicleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
     },
@@ -102,11 +102,11 @@ export default function VehicleManagement() {
       // First, set all vehicles to non-default
       await Promise.all(
         vehicles.map((v) =>
-          base44.entities.Vehicle.update(v.id, { is_default: false })
+  joltcab.entities.Vehicle.update(v.id, { is_default: false })
         )
       );
       // Then set the selected one as default
-      return base44.entities.Vehicle.update(vehicleId, { is_default: true });
+  return joltcab.entities.Vehicle.update(vehicleId, { is_default: true });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });

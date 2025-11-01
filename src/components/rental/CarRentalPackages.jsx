@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ export default function CarRentalPackages({ serviceType, city }) {
     queryFn: async () => {
       if (!serviceType?.id) return [];
       
-      const allPackages = await base44.entities.CarRentalPackage.list();
+      const allPackages = await joltcab.entities.CarRentalPackage.list();
       return allPackages.filter(p => p.service_type_id === serviceType.id && p.business_status);
     },
     enabled: !!serviceType?.id
@@ -24,9 +24,9 @@ export default function CarRentalPackages({ serviceType, city }) {
 
   const bookPackageMutation = useMutation({
     mutationFn: async (packageData) => {
-      const user = await base44.auth.me();
+      const user = await joltcab.auth.me();
       
-      return base44.entities.Ride.create({
+      return joltcab.entities.Ride.create({
         passenger_email: user.email,
         service_type_id: serviceType.id,
         rental_package_id: packageData.id,

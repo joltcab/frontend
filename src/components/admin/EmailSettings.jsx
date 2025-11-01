@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import joltcab from '@/lib/joltcab-api';
 import { useTranslation } from '@/components/i18n/useTranslation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,7 +31,7 @@ export default function EmailSettings() {
   const { data: settings } = useQuery({
     queryKey: ['emailSettings'],
     queryFn: async () => {
-      const result = await base44.entities.EmailSettings.filter({});
+  const result = await joltcab.entities.EmailSettings.filter({});
       return result[0];
     }
   });
@@ -54,9 +54,9 @@ export default function EmailSettings() {
   const updateMutation = useMutation({
     mutationFn: async (data) => {
       if (settings?.id) {
-        return await base44.entities.EmailSettings.update(settings.id, data);
+  return await joltcab.entities.EmailSettings.update(settings.id, data);
       } else {
-        return await base44.entities.EmailSettings.create(data);
+  return await joltcab.entities.EmailSettings.create(data);
       }
     },
     onSuccess: () => {
@@ -67,7 +67,7 @@ export default function EmailSettings() {
 
   const testEmailMutation = useMutation({
     mutationFn: async (email) => {
-      const response = await base44.functions.invoke('sendTestEmail', { to: email });
+  const response = await joltcab.functions.invoke('sendTestEmail', { to: email });
       return response.data;
     },
     onSuccess: () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "@/components/i18n/useTranslation";
 import { Button } from "@/components/ui/button";
@@ -70,7 +70,7 @@ export default function RideHistory() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -85,7 +85,7 @@ export default function RideHistory() {
     queryKey: ["rides", user?.email, user?.role, appliedFilters],
     queryFn: async () => {
       const filterField = isDriver ? "driver_email" : "passenger_email";
-      let allRides = await base44.entities.Ride.filter(
+  let allRides = await joltcab.entities.Ride.filter(
         { [filterField]: user.email },
         `-${appliedFilters.sortField}`,
         1000
@@ -247,7 +247,7 @@ export default function RideHistory() {
 
     setCancellingRide(rideId);
     try {
-      const { data } = await base44.functions.invoke("cancelRide", {
+  const { data } = await joltcab.functions.invoke("cancelRide", {
         ride_id: rideId,
         reason: "changed_mind",
         reason_text: "User cancelled via dashboard",
@@ -561,7 +561,7 @@ export default function RideHistory() {
                                   <DropdownMenuItem
                                     onClick={async () => {
                                       try {
-                                        const { data } = await base44.functions.invoke("exportRideInvoice", { ride_id: ride.id });
+  const { data } = await joltcab.functions.invoke("exportRideInvoice", { ride_id: ride.id });
                                         const blob = new Blob([data], { type: "application/pdf" });
                                         const url = window.URL.createObjectURL(blob);
                                         const a = document.createElement("a");

@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,36 +53,36 @@ export default function AdminZonePricing() {
   // Fetch data
   const { data: zonePrices = [], isLoading } = useQuery({
     queryKey: ['zone-prices'],
-    queryFn: () => base44.entities.ZonePrice.list()
+  queryFn: () => joltcab.entities.ZonePrice.list()
   });
 
   const { data: priceConfigs = [] } = useQuery({
     queryKey: ['price-configurations'],
-    queryFn: () => base44.entities.PriceConfiguration.list()
+  queryFn: () => joltcab.entities.PriceConfiguration.list()
   });
 
   const { data: zones = [] } = useQuery({
     queryKey: ['zones'],
-    queryFn: () => base44.entities.Zone.list()
+  queryFn: () => joltcab.entities.Zone.list()
   });
 
   const { data: cities = [] } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list()
+  queryFn: () => joltcab.entities.City.list()
   });
 
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['service-types'],
-    queryFn: () => base44.entities.ServiceType.list()
+  queryFn: () => joltcab.entities.ServiceType.list()
   });
 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingPrice) {
-        return await base44.entities.ZonePrice.update(editingPrice.id, data);
+  return await joltcab.entities.ZonePrice.update(editingPrice.id, data);
       }
-      return await base44.entities.ZonePrice.create(data);
+  return await joltcab.entities.ZonePrice.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['zone-prices']);
@@ -96,7 +96,7 @@ export default function AdminZonePricing() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.ZonePrice.delete(id),
+  mutationFn: (id) => joltcab.entities.ZonePrice.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['zone-prices']);
       alert('Zone price deleted successfully!');

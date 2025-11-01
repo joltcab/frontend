@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ export default function AIChat({ role }) {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+      const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -35,7 +35,7 @@ export default function AIChat({ role }) {
 
   const { data: messages = [] } = useQuery({
     queryKey: ["chatMessages", user?.email, role],
-    queryFn: () => base44.entities.ChatMessage.filter({ user_email: user?.email, role }, "-created_date", 50),
+    queryFn: () => joltcab.entities.ChatMessage.filter({ user_email: user?.email, role }, "-created_date", 50),
     enabled: !!user && isOpen,
   });
 
@@ -46,7 +46,7 @@ export default function AIChat({ role }) {
   const sendMessageMutation = useMutation({
     mutationFn: async (content) => {
       // Save user message
-      await base44.entities.ChatMessage.create({
+      await joltcab.entities.ChatMessage.create({
         user_email: user.email,
         role,
         content,
@@ -56,7 +56,7 @@ export default function AIChat({ role }) {
       // TODO: Later connect to POST /api/chat/send
       // For now, simulate AI response
       const aiResponse = generateAIResponse(content, role);
-      await base44.entities.ChatMessage.create({
+      await joltcab.entities.ChatMessage.create({
         user_email: user.email,
         role,
         content: aiResponse,

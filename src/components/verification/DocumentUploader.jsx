@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -91,7 +91,7 @@ export default function DocumentUploader({ userEmail, onComplete }) {
         }));
       }, 200);
 
-      const { data } = await base44.functions.invoke('uploadDocument', {
+  const { data } = await joltcab.functions.invoke('uploadDocument', {
         file,
         document_type: docType,
         user_email: userEmail
@@ -145,7 +145,7 @@ export default function DocumentUploader({ userEmail, onComplete }) {
     setVerifying(true);
 
     try {
-      const { data } = await base44.functions.invoke('verifySelfieID', {
+  const { data } = await joltcab.functions.invoke('verifySelfieID', {
         selfie_file_url: documents.selfie_with_id.file_url,
         license_file_url: documents.license_front.file_url
       });

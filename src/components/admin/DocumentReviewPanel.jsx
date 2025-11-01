@@ -18,11 +18,11 @@ export default function DocumentReviewPanel() {
 
   const { data: pendingDocs = [], isLoading } = useQuery({
     queryKey: ['pendingDocuments'],
-    queryFn: () => base44.entities.Document.filter({ status: 'pending' }, '-created_date'),
+    queryFn: () => joltcab.entities.Document.filter({ status: 'pending' }, '-created_date'),
   });
 
   const approveMutation = useMutation({
-    mutationFn: (id) => base44.entities.Document.update(id, { 
+    mutationFn: (id) => joltcab.entities.Document.update(id, { 
       status: 'approved',
       rejection_reason: null 
     }),
@@ -33,7 +33,7 @@ export default function DocumentReviewPanel() {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: ({ id, reason }) => base44.entities.Document.update(id, { 
+    mutationFn: ({ id, reason }) => joltcab.entities.Document.update(id, { 
       status: 'rejected',
       rejection_reason: reason 
     }),
@@ -46,7 +46,7 @@ export default function DocumentReviewPanel() {
 
   const aiVerifyMutation = useMutation({
     mutationFn: async (documentId) => {
-      const { data } = await base44.functions.invoke('verifyDocumentAI', {
+  const { data } = await joltcab.functions.invoke('verifyDocumentAI', {
         document_id: documentId
       });
       return data;

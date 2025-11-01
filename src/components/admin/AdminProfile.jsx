@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ export default function AdminProfile({ user, onUpdate }) {
   const [success, setSuccess] = useState(false);
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data) => base44.auth.updateMe(data),
+    mutationFn: (data) => joltcab.auth.updateMe(data),
     onSuccess: () => {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -43,7 +43,7 @@ export default function AdminProfile({ user, onUpdate }) {
       uploadFormData.append('file', file);
       uploadFormData.append('folder', 'profiles');
       
-      const { data } = await base44.functions.invoke('r2Upload', uploadFormData);
+      const { data } = await joltcab.functions.invoke('r2Upload', uploadFormData);
       
       if (!data.success) {
         throw new Error('Failed to upload image');

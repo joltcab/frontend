@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
+import appConfig from "@/config/app";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ export default function Register() {
         return;
       }
 
-      const user = await base44.auth.me();
+  const user = await joltcab.auth.me();
       if (user) {
         redirectToDashboard(user.role);
       }
@@ -96,13 +97,13 @@ export default function Register() {
 
     try {
       // Registrar con base44
-      await base44.auth.register(formData.email, formData.password);
+  await joltcab.auth.register(formData.email, formData.password);
       
       // Login automático
-      await base44.auth.login(formData.email, formData.password);
+  await joltcab.auth.login(formData.email, formData.password);
       
       // Actualizar perfil con rol y datos adicionales
-      await base44.auth.updateMe({
+  await joltcab.auth.updateMe({
         full_name: formData.full_name,
         phone: formData.phone,
         role: selectedRole,
@@ -239,7 +240,7 @@ export default function Register() {
             className="text-center mb-12"
           >
             <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da8_LogoAppjolt26.png"
+  src={appConfig.logo}
               alt="JoltCab"
               className="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-6"
             />

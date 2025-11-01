@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,11 +17,11 @@ export default function CategoryManager() {
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.list(),
+    queryFn: () => joltcab.entities.Category.list(),
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Category.create(data),
+    mutationFn: (data) => joltcab.entities.Category.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       setIsDialogOpen(false);
@@ -30,7 +30,7 @@ export default function CategoryManager() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Category.update(id, data),
+    mutationFn: ({ id, data }) => joltcab.entities.Category.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       setIsDialogOpen(false);
@@ -39,7 +39,7 @@ export default function CategoryManager() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Category.delete(id),
+    mutationFn: (id) => joltcab.entities.Category.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
   });
 

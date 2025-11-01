@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,18 +35,18 @@ export default function AdminZoneManagement() {
 
   const { data: cities = [], isLoading: citiesLoading } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list(),
+  queryFn: () => joltcab.entities.City.list(),
   });
 
   const { data: zones = [], isLoading: zonesLoading } = useQuery({
     queryKey: ['zones', selectedCity],
-    queryFn: () => base44.entities.Zone.filter({ city_id: selectedCity }),
+  queryFn: () => joltcab.entities.Zone.filter({ city_id: selectedCity }),
     enabled: !!selectedCity,
   });
 
   const createZoneMutation = useMutation({
     mutationFn: async (zoneData) => {
-      return await base44.entities.Zone.create(zoneData);
+  return await joltcab.entities.Zone.create(zoneData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['zones']);
@@ -60,7 +60,7 @@ export default function AdminZoneManagement() {
 
   const updateZoneMutation = useMutation({
     mutationFn: async ({ id, zoneData }) => {
-      return await base44.entities.Zone.update(id, zoneData);
+  return await joltcab.entities.Zone.update(id, zoneData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['zones']);
@@ -74,7 +74,7 @@ export default function AdminZoneManagement() {
 
   const deleteZoneMutation = useMutation({
     mutationFn: async (zoneId) => {
-      return await base44.entities.Zone.delete(zoneId);
+  return await joltcab.entities.Zone.delete(zoneId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['zones']);

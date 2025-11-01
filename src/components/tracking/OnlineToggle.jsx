@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Zap, ZapOff } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -12,12 +12,12 @@ export default function OnlineToggle({ driverEmail, isOnline }) {
 
   const toggleOnlineMutation = useMutation({
     mutationFn: async (online) => {
-      const profiles = await base44.entities.DriverProfile.filter({ 
+  const profiles = await joltcab.entities.DriverProfile.filter({
         user_email: driverEmail 
       });
       
       if (profiles[0]) {
-        await base44.entities.DriverProfile.update(profiles[0].id, {
+  await joltcab.entities.DriverProfile.update(profiles[0].id, {
           is_online: online,
         });
       }

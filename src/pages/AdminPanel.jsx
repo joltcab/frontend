@@ -491,7 +491,7 @@ export default function AdminPanel() {
                 )}
               </button>
               <img
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da8_LogoAppjolt26.png"
+  src={appConfig.logo}
                 alt="JoltCab"
                 className="h-12 w-12 rounded-xl shadow-md"
               />
@@ -595,7 +595,7 @@ export default function AdminPanel() {
                 {!sidebarCollapsed && (
                   <div className="flex items-center gap-3">
                     <img
-                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da3_LogoAppjolt26.png"
+  src={appConfig.logo}
                       alt="JoltCab"
                       className="h-10 w-10 rounded-lg"
                     />
@@ -618,7 +618,7 @@ export default function AdminPanel() {
                 
                 {sidebarCollapsed && (
                   <img
-                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da3_LogoAppjolt26.png"
+  src={appConfig.logo}
                     alt="JoltCab"
                     className="h-10 w-10 rounded-lg mx-auto"
                   />

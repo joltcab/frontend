@@ -1,4 +1,5 @@
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
+import appConfig from "@/config/app";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,17 +26,17 @@ export default function BasicSettings() {
   // --- DATA FETCHING ---
   const { data: systemConfigs = [], isLoading: isLoadingConfigs } = useQuery({
     queryKey: ['systemConfigurations'],
-    queryFn: () => base44.entities.SystemConfiguration.list(),
+  queryFn: () => joltcab.entities.SystemConfiguration.list(),
   });
 
   const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list(),
+  queryFn: () => joltcab.countries.list(),
   });
 
   const { data: cities = [], isLoading: isLoadingCities } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list(),
+  queryFn: () => joltcab.entities.City.list(),
   });
 
   // --- MUTATION FOR SAVING ---
@@ -43,9 +44,9 @@ export default function BasicSettings() {
     mutationFn: async ({ key, value, category }) => {
       const existing = systemConfigs.find(c => c.config_key === key);
       if (existing) {
-        return base44.entities.SystemConfiguration.update(existing.id, { config_value: String(value) });
+        return joltcab.entities.SystemConfiguration.update(existing.id, { config_value: String(value) });
       } else {
-        return base44.entities.SystemConfiguration.create({ 
+        return joltcab.entities.SystemConfiguration.create({ 
           config_key: key, 
           config_value: String(value), 
           config_category: category 
@@ -673,7 +674,7 @@ export default function BasicSettings() {
                   <Label className="mb-2 block">App Logo</Label>
                   <div className="flex items-center gap-4">
                     <img 
-                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da8_LogoAppjolt26.png" 
+  src={appConfig.logo}
                       alt="Logo" 
                       className="h-16 w-16 rounded-lg object-cover border"
                     />

@@ -1,5 +1,5 @@
 
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,17 +32,17 @@ export default function DispatchersManagement() {
 
   const { data: dispatchers = [] } = useQuery({
     queryKey: ['dispatcherProfiles'],
-    queryFn: () => base44.entities.DispatcherProfile.list('-created_date'),
+    queryFn: () => joltcab.entities.DispatcherProfile.list('-created_date'),
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => joltcab.entities.User.list(),
   });
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list(),
+    queryFn: () => joltcab.entities.Country.list(),
   });
 
   // Create/Update dispatcher mutation
@@ -71,7 +71,7 @@ export default function DispatchersManagement() {
         throw new Error('Phone number is required');
       }
 
-      const response = await base44.functions.invoke('registerDispatcher', {
+      const response = await joltcab.functions.invoke('registerDispatcher', {
         full_name: `${data.first_name} ${data.last_name}`,
         email: data.email,
         password: data.password,
@@ -124,14 +124,14 @@ export default function DispatchersManagement() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => base44.entities.DispatcherProfile.update(id, { status }),
+    mutationFn: ({ id, status }) => joltcab.entities.DispatcherProfile.update(id, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dispatcherProfiles'] });
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.DispatcherProfile.delete(id),
+    mutationFn: (id) => joltcab.entities.DispatcherProfile.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dispatcherProfiles'] });
     },

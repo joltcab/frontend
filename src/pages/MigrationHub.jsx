@@ -37,7 +37,7 @@ export default function MigrationHub() {
 // Ejecuta esto en la consola del navegador en tu app
 // O créalo como una página temporal
 
-import { base44 } from '@/api/base44Client';
+import joltcab from '@/lib/joltcab-api';
 
 const exportAllData = async () => {
   console.log('🚀 Iniciando exportación de datos...');
@@ -103,7 +103,7 @@ const exportAllData = async () => {
     try {
       console.log('📦 Exportando ' + entityName + '...');
       
-      const records = await base44.entities[entityName].list();
+  const records = await joltcab.entities[entityName].list();
       
       exportData.entities[entityName] = records;
       totalRecords += records.length;

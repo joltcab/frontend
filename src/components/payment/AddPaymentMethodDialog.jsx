@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, Loader2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import PropTypes from "prop-types";
 
 export default function AddPaymentMethodDialog({ isOpen, onClose, userEmail }) {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
   const addPaymentMutation = useMutation({
-    mutationFn: (data) => base44.entities.PaymentMethod.create(data),
+    mutationFn: (data) => joltcab.entities.PaymentMethod.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['paymentMethods'] });
       onClose();
@@ -26,9 +27,6 @@ export default function AddPaymentMethodDialog({ isOpen, onClose, userEmail }) {
 
     const formData = new FormData(e.target);
     const cardNumber = formData.get('cardNumber').replace(/\s/g, '');
-    const expiry = formData.get('expiry');
-    const cvv = formData.get('cvv');
-    const cardholderName = formData.get('cardholderName');
 
     // Detectar tipo de tarjeta
     let brand = 'visa';
@@ -202,3 +200,9 @@ export default function AddPaymentMethodDialog({ isOpen, onClose, userEmail }) {
     </Dialog>
   );
 }
+
+AddPaymentMethodDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  userEmail: PropTypes.string.isRequired,
+};

@@ -1,5 +1,5 @@
 import React from "react";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,9 +12,9 @@ import { createPageUrl } from "@/utils";
 export default function DispatcherFutureRidesList({ scheduledRides, onRefresh }) {
   const cancelMutation = useMutation({
     mutationFn: async (scheduleId) => {
-      const schedules = await base44.entities.ScheduledRide.filter({ id: scheduleId });
+      const schedules = await joltcab.entities.ScheduledRide.filter({ id: scheduleId });
       if (schedules[0]) {
-        await base44.entities.ScheduledRide.update(scheduleId, {
+        await joltcab.entities.ScheduledRide.update(scheduleId, {
           status: 'cancelled'
         });
       }

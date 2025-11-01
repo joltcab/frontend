@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,20 +32,20 @@ export default function PassengerSignUpForm({ onSuccess }) {
     }
 
     try {
-      await base44.auth.register({
+      await joltcab.auth.register({
         email: formData.email,
         password: formData.password,
         full_name: formData.full_name,
       });
 
-      await base44.auth.updateMe({
+      await joltcab.auth.updateMe({
         phone: formData.phone,
         role: "user",
         status: "active",
       });
 
       try {
-        await base44.entities.Wallet.create({
+        await joltcab.entities.Wallet.create({
           user_email: formData.email,
           balance: 0,
           currency: "USD"

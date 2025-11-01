@@ -162,7 +162,7 @@ export default function VerificationPending() {
           className="text-center"
         >
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da8_LogoAppjolt26.png"
+  src={appConfig.logo}
             alt="JoltCab"
             className="h-20 w-20 mx-auto rounded-2xl shadow-lg mb-4"
           />

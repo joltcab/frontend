@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,12 +39,12 @@ export default function EventEditor() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.filter({ type: 'event' }),
+  queryFn: () => joltcab.entities.Category.filter({ type: 'event' }),
   });
 
   const { data: allTags = [] } = useQuery({
     queryKey: ['tags'],
-    queryFn: () => base44.entities.Tag.list(),
+  queryFn: () => joltcab.entities.Tag.list(),
   });
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function EventEditor() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       if (!eventId) {
         setFormData(prev => ({ ...prev, organizer_email: userData.email }));
@@ -71,7 +71,7 @@ export default function EventEditor() {
 
   const loadEvent = async (id) => {
     try {
-      const events = await base44.entities.Event.list();
+  const events = await joltcab.entities.Event.list();
       const event = events.find(e => e.id === id);
       if (event) {
         setFormData(event);
@@ -82,7 +82,7 @@ export default function EventEditor() {
   };
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Event.create(data),
+  mutationFn: (data) => joltcab.entities.Event.create(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       window.location.href = createPageUrl(`Event?slug=${data.slug}`);
@@ -90,7 +90,7 @@ export default function EventEditor() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Event.update(id, data),
+  mutationFn: ({ id, data }) => joltcab.entities.Event.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       alert("Event updated successfully!");
@@ -103,7 +103,7 @@ export default function EventEditor() {
 
     setUploadingImage(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, featured_image: file_url }));
     } catch (error) {
       alert("Failed to upload image");

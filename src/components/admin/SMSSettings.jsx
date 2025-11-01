@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { joltcab } from '@/lib/joltcab-api';
 import { useTranslation } from '@/components/i18n/useTranslation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +26,7 @@ export default function SMSSettings() {
   const { data: config } = useQuery({
     queryKey: ['systemConfig', 'sms'],
     queryFn: async () => {
-      const configs = await base44.entities.SystemConfiguration.filter({
+      const configs = await joltcab.entities.SystemConfiguration.filter({
         config_category: 'sms'
       });
       return configs;
@@ -63,11 +63,11 @@ export default function SMSSettings() {
       for (const update of updates) {
         const existing = config?.find(c => c.config_key === update.key);
         if (existing) {
-          await base44.entities.SystemConfiguration.update(existing.id, {
+          await joltcab.entities.SystemConfiguration.update(existing.id, {
             config_value: update.value
           });
         } else {
-          await base44.entities.SystemConfiguration.create({
+          await joltcab.entities.SystemConfiguration.create({
             config_key: update.key,
             config_value: update.value,
             config_category: 'sms',
@@ -84,7 +84,7 @@ export default function SMSSettings() {
 
   const testSMSMutation = useMutation({
     mutationFn: async ({ phone, message }) => {
-      const response = await base44.functions.invoke('sendSMS', {
+      const response = await joltcab.functions.invoke('sendSMS', {
         to: phone,
         message: message
       });

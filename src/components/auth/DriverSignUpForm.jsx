@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { useState } from "react";
+import { joltcab } from "@/lib/joltcab-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, AlertCircle, CheckCircle, Upload, ChevronRight, ChevronLeft } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import PropTypes from "prop-types";
 
 export default function DriverSignUpForm({ onSuccess }) {
   const [step, setStep] = useState(1);
@@ -39,8 +40,8 @@ export default function DriverSignUpForm({ onSuccess }) {
     if (!file) return;
 
     setUploadingDoc(docType);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  try {
+      const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       setDocuments(prev => ({ ...prev, [docType]: file_url }));
     } catch (err) {
       setError(`Failed to upload ${docType}. Please try again.`);
@@ -66,19 +67,19 @@ export default function DriverSignUpForm({ onSuccess }) {
     }
 
     try {
-      await base44.auth.register({
+      await joltcab.auth.register({
         email: formData.email,
         password: formData.password,
         full_name: formData.full_name,
       });
 
-      await base44.auth.updateMe({
+      await joltcab.auth.updateMe({
         phone: formData.phone,
         role: "driver",
         status: "pending",
       });
 
-      await base44.entities.DriverProfile.create({
+      await joltcab.entities.DriverProfile.create({
         user_email: formData.email,
         vehicle_make: formData.vehicle_make,
         vehicle_model: formData.vehicle_model,
@@ -92,7 +93,7 @@ export default function DriverSignUpForm({ onSuccess }) {
 
       for (const [docType, fileUrl] of Object.entries(documents)) {
         if (fileUrl) {
-          await base44.entities.Document.create({
+          await joltcab.entities.Document.create({
             user_email: formData.email,
             document_type: docType,
             file_url: fileUrl,
@@ -102,6 +103,9 @@ export default function DriverSignUpForm({ onSuccess }) {
       }
 
       setSuccess(true);
+      if (typeof onSuccess === 'function') {
+        onSuccess({ email: formData.email });
+      }
       setTimeout(() => {
         window.location.href = createPageUrl("CompleteVerification");
       }, 2000);
@@ -676,3 +680,7 @@ export default function DriverSignUpForm({ onSuccess }) {
     </div>
   );
 }
+
+DriverSignUpForm.propTypes = {
+  onSuccess: PropTypes.func,
+};

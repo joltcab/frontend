@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,17 +39,17 @@ export default function RideBookingDialog({ isOpen, onClose, user }) {
   // Fetch active service types
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['activeServiceTypes'],
-    queryFn: () => base44.entities.ServiceType.filter({ business_status: true }),
+  queryFn: () => joltcab.entities.ServiceType.filter({ business_status: true }),
   });
 
   // Fetch cities for filtering
   const { data: cities = [] } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.filter({ business_status: true }),
+  queryFn: () => joltcab.entities.City.filter({ business_status: true }),
   });
 
   const createRideMutation = useMutation({
-    mutationFn: (data) => base44.entities.Ride.create(data),
+  mutationFn: (data) => joltcab.entities.Ride.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userRides'] });
       onClose();
@@ -106,7 +106,7 @@ export default function RideBookingDialog({ isOpen, onClose, user }) {
         ? new Date(`${scheduledDate}T${scheduledTime}`).toISOString()
         : null;
 
-      const { data } = await base44.functions.invoke('calculateAdvancedFare', {
+  const { data } = await joltcab.functions.invoke('calculateAdvancedFare', {
         pickup: {
           lat: pickupLocation.lat,
           lng: pickupLocation.lng

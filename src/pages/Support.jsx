@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,7 +62,7 @@ export default function Support() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -71,12 +71,12 @@ export default function Support() {
 
   const { data: tickets = [] } = useQuery({
     queryKey: ["tickets"],
-    queryFn: () => base44.entities.SupportTicket.filter({ user_email: user?.email }, "-created_date", 20),
+  queryFn: () => joltcab.entities.SupportTicket.filter({ user_email: user?.email }, "-created_date", 20),
     enabled: !!user,
   });
 
   const createTicketMutation = useMutation({
-    mutationFn: (ticketData) => base44.entities.SupportTicket.create({
+  mutationFn: (ticketData) => joltcab.entities.SupportTicket.create({
       ...ticketData,
       user_email: user?.email,
       status: "open",

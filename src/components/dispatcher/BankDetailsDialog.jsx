@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { useState, useEffect } from "react";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation } from "@tanstack/react-query";
 import {
   Dialog,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, CreditCard, Check } from "lucide-react";
+import PropTypes from "prop-types";
 
 export default function BankDetailsDialog({ open, onClose, profile, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ export default function BankDetailsDialog({ open, onClose, profile, onSuccess })
 
   const updateMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.entities.DispatcherProfile.update(profile.id, data);
+      return await joltcab.entities.DispatcherProfile.update(profile.id, data);
     },
     onSuccess: () => {
       onSuccess();
@@ -186,3 +187,19 @@ export default function BankDetailsDialog({ open, onClose, profile, onSuccess })
     </Dialog>
   );
 }
+
+BankDetailsDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func.isRequired,
+  profile: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    bank_name: PropTypes.string,
+    bank_branch: PropTypes.string,
+    bank_account_number: PropTypes.string,
+    bank_account_holder_name: PropTypes.string,
+    bank_beneficiary_address: PropTypes.string,
+    bank_unique_code: PropTypes.string,
+    bank_swift_code: PropTypes.string,
+  }),
+};

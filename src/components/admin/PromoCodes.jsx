@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,11 +20,11 @@ export default function PromoCodes() {
 
   const { data: promoCodes = [], isLoading } = useQuery({
     queryKey: ['promoCodes'],
-    queryFn: () => base44.entities.PromoCode.list('-created_date'),
+  queryFn: () => joltcab.entities.PromoCode.list('-created_date'),
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.PromoCode.create(data),
+  mutationFn: (data) => joltcab.entities.PromoCode.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['promoCodes'] });
       setIsDialogOpen(false);
@@ -33,7 +33,7 @@ export default function PromoCodes() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.PromoCode.update(id, data),
+  mutationFn: ({ id, data }) => joltcab.entities.PromoCode.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['promoCodes'] });
       setIsDialogOpen(false);
@@ -42,7 +42,7 @@ export default function PromoCodes() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.PromoCode.delete(id),
+  mutationFn: (id) => joltcab.entities.PromoCode.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['promoCodes'] });
     },

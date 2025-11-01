@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ export default function DriverEarnings() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -42,7 +42,7 @@ export default function DriverEarnings() {
   const { data: earningsData = [], isLoading } = useQuery({
     queryKey: ["driverEarnings", user?.email, activeTab, startDate, endDate],
     queryFn: async () => {
-      let allEarnings = await base44.entities.DriverEarning.filter(
+  let allEarnings = await joltcab.entities.DriverEarning.filter(
         { driver_email: user.email },
         `-${sortField}`,
         1000

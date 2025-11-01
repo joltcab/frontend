@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, MapPin, Info } from "lucide-react";
@@ -12,17 +12,17 @@ export default function CarRental() {
 
   const { data: user } = useQuery({
     queryKey: ['user'],
-    queryFn: () => base44.auth.me(),
+  queryFn: () => joltcab.auth.me(),
   });
 
   const { data: cities = [] } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list(),
+  queryFn: () => joltcab.entities.City.list(),
   });
 
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['serviceTypes'],
-    queryFn: () => base44.entities.ServiceType.list(),
+  queryFn: () => joltcab.entities.ServiceType.list(),
   });
 
   return (

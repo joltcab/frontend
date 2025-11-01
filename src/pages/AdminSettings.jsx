@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -81,7 +81,7 @@ export default function AdminSettings() {
 
   const loadSettings = async () => {
     try {
-      const configs = await base44.entities.SystemConfiguration.list();
+  const configs = await joltcab.entities.SystemConfiguration.list();
       
       const settingsMap = {};
       configs.forEach(config => {
@@ -144,7 +144,7 @@ export default function AdminSettings() {
 
   const loadCountries = async () => {
     try {
-      const countries = await base44.countries.list();
+  const countries = await joltcab.countries.list();
       setCountries(countries);
     } catch (error) {
       console.error('Error loading countries:', error);
@@ -195,13 +195,13 @@ export default function AdminSettings() {
       ];
 
       for (const update of configUpdates) {
-        const existing = await base44.entities.SystemConfiguration.filter({ config_key: update.key });
+  const existing = await joltcab.entities.SystemConfiguration.filter({ config_key: update.key });
         if (existing[0]) {
-          await base44.entities.SystemConfiguration.update(existing[0].id, {
+  await joltcab.entities.SystemConfiguration.update(existing[0].id, {
             config_value: update.value
           });
         } else {
-          await base44.entities.SystemConfiguration.create({
+  await joltcab.entities.SystemConfiguration.create({
             config_key: update.key,
             config_value: update.value,
             config_category: 'operational'
@@ -227,13 +227,13 @@ export default function AdminSettings() {
       }));
 
       for (const update of configUpdates) {
-        const existing = await base44.entities.SystemConfiguration.filter({ config_key: update.key });
+  const existing = await joltcab.entities.SystemConfiguration.filter({ config_key: update.key });
         if (existing[0]) {
-          await base44.entities.SystemConfiguration.update(existing[0].id, {
+  await joltcab.entities.SystemConfiguration.update(existing[0].id, {
             config_value: update.value
           });
         } else {
-          await base44.entities.SystemConfiguration.create({
+  await joltcab.entities.SystemConfiguration.create({
             config_key: update.key,
             config_value: update.value,
             config_category: 'notification'
@@ -254,9 +254,9 @@ export default function AdminSettings() {
     if (!file) return;
 
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       
-      await base44.functions.invoke('uploadLogo', {
+  await joltcab.functions.invoke('uploadLogo', {
         logo_type: fileType,
         file_url: file_url
       });

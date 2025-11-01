@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Loader2 } from "lucide-react";
 
 export default function RouteMap({ pickup, dropoff, height = "400px" }) {
@@ -50,7 +50,7 @@ export default function RouteMap({ pickup, dropoff, height = "400px" }) {
       markersRef.current = [];
 
       // Fetch route from backend
-      const { data } = await base44.functions.invoke('calculateRoute', {
+      const { data } = await joltcab.functions.invoke('calculateRoute', {
         origin: pickup,
         destination: dropoff,
         departure_time: 'now',

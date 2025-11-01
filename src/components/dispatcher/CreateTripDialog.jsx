@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Dialog,
@@ -37,13 +37,13 @@ export default function CreateTripDialog({ open, onClose, dispatcherEmail, onSuc
   // Get service types
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['serviceTypes'],
-    queryFn: () => base44.entities.ServiceType.filter({ business_status: true }),
+    queryFn: () => joltcab.entities.ServiceType.filter({ business_status: true }),
   });
 
   // Get all users for passenger selection
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.filter({ role: 'user' }),
+    queryFn: () => joltcab.entities.User.filter({ role: 'user' }),
   });
 
   const createTripMutation = useMutation({
@@ -53,7 +53,7 @@ export default function CreateTripDialog({ open, onClose, dispatcherEmail, onSuc
       
       if (!passengerEmail && data.passenger_phone) {
         // Create guest user
-        const { data: result } = await base44.functions.invoke('createGuestPassenger', {
+        const { data: result } = await joltcab.functions.invoke('createGuestPassenger', {
           phone: data.passenger_phone,
           name: data.passenger_name
         });
@@ -74,13 +74,13 @@ export default function CreateTripDialog({ open, onClose, dispatcherEmail, onSuc
         dispatcher_email: dispatcherEmail
       };
 
-      const ride = await base44.entities.Ride.create(rideData);
+      const ride = await joltcab.entities.Ride.create(rideData);
 
       // If scheduled, create scheduled ride
       if (data.scheduled_date && data.scheduled_time) {
         const scheduledDatetime = `${data.scheduled_date}T${data.scheduled_time}:00`;
         
-        await base44.entities.ScheduledRide.create({
+        await joltcab.entities.ScheduledRide.create({
           ride_id: ride.id,
           passenger_email: passengerEmail,
           scheduled_datetime: scheduledDatetime,
@@ -88,7 +88,7 @@ export default function CreateTripDialog({ open, onClose, dispatcherEmail, onSuc
         });
       } else {
         // Find nearby drivers immediately
-        await base44.functions.invoke('findNearbyDrivers', {
+        await joltcab.functions.invoke('findNearbyDrivers', {
           ride_id: ride.id,
           pickup_lat: data.pickup_lat,
           pickup_lng: data.pickup_lng

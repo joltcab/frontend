@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,12 +37,12 @@ export default function BlogEditor() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.filter({ type: 'blog' }),
+  queryFn: () => joltcab.entities.Category.filter({ type: 'blog' }),
   });
 
   const { data: allTags = [] } = useQuery({
     queryKey: ['tags'],
-    queryFn: () => base44.entities.Tag.list(),
+  queryFn: () => joltcab.entities.Tag.list(),
   });
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function BlogEditor() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       if (!postId) {
         setFormData(prev => ({ ...prev, author_email: userData.email }));
@@ -70,7 +70,7 @@ export default function BlogEditor() {
 
   const loadPost = async (id) => {
     try {
-      const posts = await base44.entities.BlogPost.list();
+  const posts = await joltcab.entities.BlogPost.list();
       const post = posts.find(p => p.id === id);
       if (post) {
         setFormData(post);
@@ -81,7 +81,7 @@ export default function BlogEditor() {
   };
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.BlogPost.create(data),
+  mutationFn: (data) => joltcab.entities.BlogPost.create(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
       window.location.href = createPageUrl(`BlogPost?slug=${data.slug}`);
@@ -89,7 +89,7 @@ export default function BlogEditor() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.BlogPost.update(id, data),
+  mutationFn: ({ id, data }) => joltcab.entities.BlogPost.update(id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['blogPosts'] });
       alert("Post updated successfully!");
@@ -102,7 +102,7 @@ export default function BlogEditor() {
 
     setUploadingImage(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  const { file_url } = await joltcab.integrations.Core.UploadFile({ file });
       setFormData(prev => ({ ...prev, featured_image: file_url }));
     } catch (error) {
       console.error("Error uploading image:", error);

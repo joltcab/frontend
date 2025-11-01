@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +37,7 @@ export default function RideDetail() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -47,7 +47,7 @@ export default function RideDetail() {
   const { data: ride, isLoading } = useQuery({
     queryKey: ["ride", rideId],
     queryFn: async () => {
-      const rides = await base44.entities.Ride.filter({ id: rideId });
+  const rides = await joltcab.entities.Ride.filter({ id: rideId });
       return rides[0];
     },
     enabled: !!rideId,
@@ -55,7 +55,7 @@ export default function RideDetail() {
 
   const exportToPDF = async () => {
     try {
-      const response = await base44.functions.invoke('exportRideInvoice', {
+  const response = await joltcab.functions.invoke('exportRideInvoice', {
         ride_id: rideId
       });
       

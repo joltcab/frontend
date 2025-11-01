@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Loader2, AlertCircle, CheckCircle, Building2, User, Phone, Mail, Lock, FileText, Users as UsersIcon } from "lucide-react";
 import { createPageUrl } from "@/utils";
 
@@ -73,25 +73,25 @@ export default function CorporateSignUpForm({ onSuccess }) {
     setLoading(true);
 
     try {
-      // Step 1: Register the user with base44.auth
-      await base44.auth.register({
+      // Step 1: Register the user with joltcab.auth
+      await joltcab.auth.register({
         email: formData.email.trim(),
         password: formData.password,
         full_name: formData.full_name.trim(),
       });
 
       // Step 2: Login to get authenticated session
-      await base44.auth.login(formData.email.trim(), formData.password);
+      await joltcab.auth.login(formData.email.trim(), formData.password);
 
       // Step 3: Update user with additional info (now authenticated)
-      await base44.auth.updateMe({
+      await joltcab.auth.updateMe({
         phone: formData.phone.trim(),
         role: "corporate",
         status: "pending",
       });
 
       // Step 4: Create corporate profile using service role
-      await base44.asServiceRole.entities.CorporateProfile.create({
+      await joltcab.asServiceRole.entities.CorporateProfile.create({
         user_email: formData.email.trim(),
         company_name: formData.company_name.trim(),
         contact_name: formData.contact_name.trim(),
@@ -103,7 +103,7 @@ export default function CorporateSignUpForm({ onSuccess }) {
       });
 
       // Step 5: Create verification data
-      await base44.asServiceRole.entities.VerificationData.create({
+      await joltcab.asServiceRole.entities.VerificationData.create({
         user_email: formData.email.trim(),
         email_verified: false,
         phone_verified: false,
@@ -113,7 +113,7 @@ export default function CorporateSignUpForm({ onSuccess }) {
 
       // Step 6: Send notification (non-blocking)
       try {
-        await base44.functions.invoke('sendNotification', {
+        await joltcab.functions.invoke('sendNotification', {
           user_email: formData.email.trim(),
           type: 'info',
           title: '🎉 Welcome to JoltCab Corporate!',
@@ -127,7 +127,7 @@ export default function CorporateSignUpForm({ onSuccess }) {
 
       // Step 7: Notify admin (non-blocking)
       try {
-        await base44.functions.invoke('notifyAdmin', {
+        await joltcab.functions.invoke('notifyAdmin', {
           subject: 'New Corporate Registration',
           message: `New corporate account registered: ${formData.company_name}`,
           type: 'new_registration',

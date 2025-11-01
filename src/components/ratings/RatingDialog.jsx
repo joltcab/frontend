@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, ThumbsUp, MessageCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function RatingDialog({ isOpen, onClose, ride, userRole }) {
@@ -16,29 +16,29 @@ export default function RatingDialog({ isOpen, onClose, ride, userRole }) {
   const reviewMutation = useMutation({
     mutationFn: async (data) => {
       // Create review
-      await base44.entities.Review.create(data);
+  await joltcab.entities.Review.create(data);
 
       // Update ride with rating
       const updateField = userRole === 'driver' ? 'rating_passenger' : 'rating_driver';
-      await base44.entities.Ride.update(ride.id, {
+  await joltcab.entities.Ride.update(ride.id, {
         [updateField]: rating
       });
 
       // Update driver/user rating average if rating a driver
       if (userRole !== 'driver') {
-        const driverProfile = await base44.entities.DriverProfile.filter({ 
+  const driverProfile = await joltcab.entities.DriverProfile.filter({
           user_email: ride.driver_email 
         });
         
         if (driverProfile[0]) {
-          const allReviews = await base44.entities.Review.filter({ 
+  const allReviews = await joltcab.entities.Review.filter({
             reviewee_email: ride.driver_email 
           });
           
           const totalRating = allReviews.reduce((sum, r) => sum + r.rating, 0) + rating;
           const avgRating = totalRating / (allReviews.length + 1);
           
-          await base44.entities.DriverProfile.update(driverProfile[0].id, {
+  await joltcab.entities.DriverProfile.update(driverProfile[0].id, {
             rating: Number(avgRating.toFixed(1)),
             total_trips: (driverProfile[0].total_trips || 0) + 1
           });

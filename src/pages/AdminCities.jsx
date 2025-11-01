@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,21 +71,21 @@ export default function AdminCities() {
   // Fetch data
   const { data: cities = [], isLoading } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list()
+  queryFn: () => joltcab.entities.City.list()
   });
 
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
-    queryFn: () => base44.countries.list()
+  queryFn: () => joltcab.countries.list()
   });
 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingCity) {
-        return await base44.entities.City.update(editingCity.id, data);
+  return await joltcab.entities.City.update(editingCity.id, data);
       }
-      return await base44.entities.City.create(data);
+  return await joltcab.entities.City.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['cities']);
@@ -99,7 +99,7 @@ export default function AdminCities() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.City.delete(id),
+  mutationFn: (id) => joltcab.entities.City.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['cities']);
       alert('City deleted successfully!');

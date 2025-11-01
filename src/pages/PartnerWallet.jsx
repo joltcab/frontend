@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ export default function PartnerWallet() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       
       if (userData.role !== 'partner') {
@@ -49,7 +49,7 @@ export default function PartnerWallet() {
         return;
       }
 
-      const profiles = await base44.entities.PartnerProfile.filter({
+  const profiles = await joltcab.entities.PartnerProfile.filter({
         user_email: userData.email
       });
       
@@ -58,7 +58,7 @@ export default function PartnerWallet() {
       }
 
       // Get wallet
-      const wallets = await base44.entities.Wallet.filter({
+  const wallets = await joltcab.entities.Wallet.filter({
         user_email: userData.email
       });
 
@@ -66,7 +66,7 @@ export default function PartnerWallet() {
         setWallet(wallets[0]);
       } else {
         // Create wallet if doesn't exist
-        const newWallet = await base44.entities.Wallet.create({
+  const newWallet = await joltcab.entities.Wallet.create({
           user_email: userData.email,
           balance: 0,
           currency: 'USD'
@@ -84,7 +84,7 @@ export default function PartnerWallet() {
   const { data: transactions = [] } = useQuery({
     queryKey: ['partnerTransactions', user?.email],
     queryFn: async () => {
-      const txns = await base44.entities.Transaction.filter({
+  const txns = await joltcab.entities.Transaction.filter({
         user_email: user?.email
       }, '-created_date', 50);
       return txns;
@@ -105,7 +105,7 @@ export default function PartnerWallet() {
       }
 
       // Create withdrawal transaction
-      const transaction = await base44.entities.Transaction.create({
+  const transaction = await joltcab.entities.Transaction.create({
         user_email: user.email,
         type: 'withdrawal',
         amount: -amount,
@@ -116,12 +116,12 @@ export default function PartnerWallet() {
       });
 
       // Update wallet balance
-      await base44.entities.Wallet.update(wallet.id, {
+  await joltcab.entities.Wallet.update(wallet.id, {
         balance: wallet.balance - amount
       });
 
       // Notify admin
-      await base44.functions.invoke('notifyAdmin', {
+  await joltcab.functions.invoke('notifyAdmin', {
         type: 'withdrawal_request',
         data: {
           partner_email: user.email,

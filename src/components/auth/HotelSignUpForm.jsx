@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,9 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Loader2, AlertCircle, CheckCircle, Hotel as HotelIcon, User, Phone, Mail, Lock, MapPin, Star } from "lucide-react";
 import { createPageUrl } from "@/utils";
+import PropTypes from "prop-types";
 
 export default function HotelSignUpForm({ onSuccess }) {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ export default function HotelSignUpForm({ onSuccess }) {
     }
     if (!formData.phone.trim()) {
       errors.phone = "Phone is required";
-    } else if (!/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
+    } else if (!/^\+?[\d\s()-]+$/.test(formData.phone)) {
       errors.phone = "Invalid phone format";
     }
     if (!formData.password) {
@@ -72,19 +73,19 @@ export default function HotelSignUpForm({ onSuccess }) {
     setLoading(true);
 
     try {
-      await base44.auth.register({
+      await joltcab.auth.register({
         email: formData.email.trim(),
         password: formData.password,
         full_name: formData.full_name.trim(),
       });
 
-      await base44.auth.updateMe({
+      await joltcab.auth.updateMe({
         phone: formData.phone.trim(),
         role: "hotel",
         status: "pending",
       });
 
-      await base44.entities.HotelProfile.create({
+      await joltcab.entities.HotelProfile.create({
         user_email: formData.email.trim(),
         hotel_name: formData.hotel_name.trim(),
         contact_name: formData.contact_name.trim(),
@@ -94,7 +95,7 @@ export default function HotelSignUpForm({ onSuccess }) {
         status: "pending",
       });
 
-      await base44.entities.VerificationData.create({
+      await joltcab.entities.VerificationData.create({
         user_email: formData.email.trim(),
         email_verified: false,
         phone_verified: false,
@@ -103,7 +104,7 @@ export default function HotelSignUpForm({ onSuccess }) {
       });
 
       try {
-        await base44.functions.invoke('sendNotification', {
+        await joltcab.functions.invoke('sendNotification', {
           user_email: formData.email.trim(),
           type: 'info',
           title: '🏨 Welcome to JoltCab Hotels!',
@@ -116,6 +117,9 @@ export default function HotelSignUpForm({ onSuccess }) {
       }
 
       setSuccess(true);
+      if (typeof onSuccess === 'function') {
+        onSuccess({ email: formData.email.trim() });
+      }
       
       setTimeout(() => {
         window.location.href = createPageUrl("CompleteVerification");
@@ -408,3 +412,7 @@ export default function HotelSignUpForm({ onSuccess }) {
     </div>
   );
 }
+
+HotelSignUpForm.propTypes = {
+  onSuccess: PropTypes.func,
+};

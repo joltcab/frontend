@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { joltcab } from "@/lib/joltcab-api";
+import appConfig from "@/config/app";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -88,7 +89,7 @@ export default function Header() {
           {/* Logo */}
           <a href={createPageUrl("Home")} className="flex items-center gap-3 group">
             <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da8_LogoAppjolt26.png"
+  src={appConfig.logo}
               alt="JoltCab"
               className="h-12 w-12 rounded-xl shadow-lg group-hover:scale-110 transition-transform"
             />

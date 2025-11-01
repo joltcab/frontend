@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ export default function Event() {
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events', slug],
-    queryFn: () => base44.entities.Event.filter({ status: 'published' }),
+  queryFn: () => joltcab.entities.Event.filter({ status: 'published' }),
     enabled: !!slug,
   });
 
@@ -32,11 +32,11 @@ export default function Event() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.list(),
+  queryFn: () => joltcab.entities.Category.list(),
   });
 
   const registerMutation = useMutation({
-    mutationFn: () => base44.entities.Event.update(event.id, {
+  mutationFn: () => joltcab.entities.Event.update(event.id, {
       current_attendees: (event.current_attendees || 0) + 1
     }),
     onSuccess: () => {

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import {
   Users, Gift, TrendingUp, DollarSign, Search,
-  CheckCircle, UserPlus, Award
+  CheckCircle, UserPlus, Award, Clock
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -27,13 +27,13 @@ export default function AdminReferrals() {
   // Fetch users with referral data
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users-referrals'],
-    queryFn: () => base44.entities.User.list()
+    queryFn: () => joltcab.entities.User.list()
   });
 
   // Update mutation for referral bonuses
   const updateMutation = useMutation({
     mutationFn: async ({ userId, data }) => {
-      return await base44.entities.User.update(userId, data);
+      return await joltcab.entities.User.update(userId, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['users-referrals']);
@@ -192,10 +192,25 @@ export default function AdminReferrals() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className="bg-[#15B46A] text-white">
-                          <DollarSign className="w-3 h-3 mr-1" />
-                          {(user.referral_earnings || 0).toFixed(2)}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-[#15B46A] text-white">
+                            <DollarSign className="w-3 h-3 mr-1" />
+                            {(user.referral_earnings || 0).toFixed(2)}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateMutation.mutate({
+                              userId: user.id,
+                              data: {
+                                referral_earnings: (user.referral_earnings || 0) + 10
+                              }
+                            })}
+                            disabled={updateMutation.isLoading}
+                          >
+                            +$10
+                          </Button>
+                        </div>
                       </TableCell>
                       <TableCell>
                         {user.referred_by ? (

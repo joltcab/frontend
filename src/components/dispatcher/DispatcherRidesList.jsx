@@ -1,5 +1,5 @@
 import React from "react";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { createPageUrl } from "@/utils";
 export default function DispatcherRidesList({ rides, onRefresh, dispatcherEmail }) {
   const cancelMutation = useMutation({
     mutationFn: async (rideId) => {
-      await base44.functions.invoke('cancelRide', {
+      await joltcab.functions.invoke('cancelRide', {
         ride_id: rideId,
         reason: 'cancelled_by_dispatcher'
       });

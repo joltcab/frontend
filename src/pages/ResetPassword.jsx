@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -80,12 +80,12 @@ export default function ResetPassword() {
       let result;
       
       if (role === 'admin') {
-        result = await base44.functions.invoke('adminResetPassword', {
+  result = await joltcab.functions.invoke('adminResetPassword', {
           token,
           new_password: password
         });
       } else {
-        result = await base44.functions.invoke('userResetPassword', {
+  result = await joltcab.functions.invoke('userResetPassword', {
           token,
           new_password: password,
           role

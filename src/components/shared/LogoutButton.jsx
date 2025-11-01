@@ -1,14 +1,14 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 
 export default function LogoutButton({ variant = "ghost", size = "default", className = "" }) {
   const handleLogout = async () => {
     if (confirm("Are you sure you want to logout?")) {
       try {
-        await base44.auth.logout();
+  await joltcab.auth.logout();
       } catch (error) {
         console.error("Error logging out:", error);
       } finally {

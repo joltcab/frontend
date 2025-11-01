@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Car, User, Navigation } from "lucide-react";
@@ -11,13 +11,13 @@ import { VEHICLE_ICON_URL } from "../maps/VehicleIcons";
 export default function MapView() {
   const { data: drivers = [] } = useQuery({
     queryKey: ['onlineDrivers'],
-    queryFn: () => base44.entities.DriverProfile.filter({ is_online: true }),
+    queryFn: () => joltcab.entities.DriverProfile.filter({ is_online: true }),
     refetchInterval: 10000,
   });
 
   const { data: activeTrips = [] } = useQuery({
     queryKey: ['activeTrips'],
-    queryFn: () => base44.entities.Ride.filter({ 
+    queryFn: () => joltcab.entities.Ride.filter({ 
       status: ['in_progress', 'accepted', 'requested'] 
     }),
     refetchInterval: 5000,
