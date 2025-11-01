@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
 import { Loader2 } from "lucide-react";
 
 export default function SocialLogin({ onSuccess, onError, buttonText = "Continue with", role }) {
@@ -9,15 +9,23 @@ export default function SocialLogin({ onSuccess, onError, buttonText = "Continue
   const handleSocialLogin = async (provider) => {
     setLoading(provider);
     try {
-      // Redirect to Base44 social auth
+      // Redirect to JoltCab social auth
       const redirectUrl = window.location.origin + window.location.pathname;
       
       // Store role in localStorage to set after redirect
       if (role) {
         localStorage.setItem('pendingUserRole', role);
       }
-      
-      base44.auth.redirectToSocialLogin(provider, redirectUrl);
+      // Initiate provider login with optional role
+      if (provider === 'google') {
+        joltcab.auth.googleLogin(redirectUrl, role || 'user');
+      } else if (provider === 'apple') {
+        joltcab.auth.appleLogin(redirectUrl, role || 'user');
+      } else if (provider === 'facebook') {
+        joltcab.auth.facebookLogin(redirectUrl, role || 'user');
+      } else {
+        throw new Error(`Unsupported provider: ${provider}`);
+      }
     } catch (error) {
       console.error(`${provider} login error:`, error);
       setLoading(null);

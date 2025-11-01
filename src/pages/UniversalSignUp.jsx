@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { joltcab } from "@/lib/joltcab-api";
+import SocialLogin from "@/components/auth/SocialLogin";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,13 @@ export default function UniversalSignUp() {
   });
 
   useEffect(() => {
-    checkAuth();
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      finalizeSocialSignup(token);
+    } else {
+      checkAuth();
+    }
   }, []);
 
   const checkAuth = async () => {
@@ -42,7 +49,7 @@ export default function UniversalSignUp() {
         return;
       }
 
-      const user = await base44.auth.me();
+      const user = await joltcab.auth.me();
       if (user) {
         const dashboards = {
           user: "UserDashboard",
@@ -91,25 +98,23 @@ export default function UniversalSignUp() {
     try {
       console.log('🚀 Starting registration for:', formData.email);
 
-      // 1. Registrar con base44.auth.register
-      await base44.auth.register(formData.email, formData.password);
+      // 1. Registrar con joltcab.auth.register (envía datos completos)
+      await joltcab.auth.register({
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.full_name,
+        phone: formData.phone,
+        role: formData.role
+      });
       
-      console.log('✅ Base44 registration successful');
+      console.log('✅ Registration successful');
 
       // 2. Login automático después del registro
-      await base44.auth.login(formData.email, formData.password);
+      await joltcab.auth.login(formData.email, formData.password);
       
       console.log('✅ Auto-login successful');
 
-      // 3. Actualizar el perfil del usuario con los datos adicionales
-      await base44.auth.updateMe({
-        full_name: formData.full_name,
-        phone: formData.phone,
-        role: formData.role,
-        status: 'pending'
-      });
-
-      console.log('✅ User profile updated');
+      // 3. El backend debe guardar los datos enviados en el registro
 
       setSuccess(true);
       setMessage({ 
@@ -215,6 +220,21 @@ export default function UniversalSignUp() {
                 <AlertDescription>{message.text}</AlertDescription>
               </Alert>
             )}
+
+            {/* Social Sign Up */}
+            <div className="mt-2 mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-gray-500">Or sign up with</span>
+                </div>
+              </div>
+              <div className="mt-6">
+                <SocialLogin role={formData.role} />
+              </div>
+            </div>
 
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
@@ -376,4 +396,40 @@ export default function UniversalSignUp() {
       </div>
     </div>
   );
+}
+
+// Finaliza sign up si viene token de social login
+async function finalizeSocialSignup(token) {
+  try {
+    joltcab.setToken(token);
+    const pendingRole = localStorage.getItem('pendingUserRole');
+    if (pendingRole) {
+      localStorage.removeItem('pendingUserRole');
+    }
+    const user = await joltcab.auth.me();
+    if (!user) throw new Error('Unable to fetch user after social signup');
+
+    // Limpiar querystring
+    const url = new URL(window.location.href);
+    url.search = '';
+    window.history.replaceState({}, document.title, url.toString());
+
+    // Redirigir según rol
+    const role = user.role || pendingRole || 'user';
+    if (role === 'driver') {
+      window.location.href = createPageUrl('CompleteVerification');
+    } else if (role === 'dispatcher') {
+      window.location.href = createPageUrl('DispatcherDashboard');
+    } else if (role === 'corporate') {
+      window.location.href = createPageUrl('CorporateDashboard');
+    } else if (role === 'hotel') {
+      window.location.href = createPageUrl('HotelDashboard');
+    } else if (role === 'partner') {
+      window.location.href = createPageUrl('PartnerDashboard');
+    } else {
+      window.location.href = createPageUrl('UserDashboard');
+    }
+  } catch (error) {
+    console.error('❌ Social signup finalize error:', error);
+  }
 }
