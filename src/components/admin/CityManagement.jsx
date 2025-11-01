@@ -37,6 +37,10 @@ export default function CityManagement() {
   const { data: countries = [] } = useQuery({
     queryKey: ['countries'],
     queryFn: () => base44.entities.Country.list(),
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   // Sincronizar el país seleccionado cuando abrimos para editar
@@ -50,12 +54,10 @@ export default function CityManagement() {
 
   // Diagnóstico: log de países cargados y cambios de selección
   useEffect(() => {
-    try {
-      console.log('🌐 [CityManagement] Countries loaded:', Array.isArray(countries) ? countries.length : 0);
-      if (Array.isArray(countries)) {
-        console.table(countries.map(c => ({ id: c.id, name: c.name, alpha2: c.alpha2 || '', country_code: c.country_code || '' })));
-      }
-    } catch (e) {}
+    console.log('🌐 [CityManagement] Countries loaded:', Array.isArray(countries) ? countries.length : 0);
+    if (Array.isArray(countries)) {
+      console.table(countries.map(c => ({ id: c.id, name: c.name, alpha2: c.alpha2 || '', country_code: c.country_code || '' })));
+    }
   }, [countries]);
 
   useEffect(() => {
@@ -542,7 +544,7 @@ export default function CityManagement() {
                     <SelectContent>
                       {countries.map(c => (
                         <SelectItem key={c.id} value={String(c.id)}>
-                          {c.name}
+                          {c.name || c.countryname || 'Unnamed Country'}
                         </SelectItem>
                       ))}
                     </SelectContent>
