@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { joltcab } from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,13 +13,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import appConfig from "@/config/app";
+
 
 import UserManagement from "../components/admin/UserManagement";
 import ServiceProviders from "../components/admin/ServiceProviders";
@@ -321,7 +316,7 @@ export default function AdminPanel() {
                     <Clock className="w-8 h-8 opacity-80" />
                     <span className="text-3xl font-bold">{stats.todayRequests}</span>
                   </div>
-                  <p className="text-sm opacity-90">Today's Requests</p>
+                  <p className="text-sm opacity-90">Today&apos;s Requests</p>
                 </CardContent>
               </Card>
 
@@ -400,7 +395,7 @@ export default function AdminPanel() {
               <CardContent className="p-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 p-6 rounded-xl">
-                    <p className="text-sm text-green-700 dark:text-green-300 mb-2">Today's Revenue</p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mb-2">Today&apos;s Revenue</p>
                     <p className="text-4xl font-bold text-green-900 dark:text-white">${stats.todayRevenue.toFixed(2)}</p>
                   </div>
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-6 rounded-xl">
