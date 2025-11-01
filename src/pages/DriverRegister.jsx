@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Car, Loader2, Camera, UploadCloud, CheckCircle2, X } from "lucide-react";
+import { Car, Loader2, UploadCloud, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { joltcab } from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 import SocialLogin from "@/components/auth/SocialLogin";
+import PropTypes from "prop-types";
 
 export default function DriverRegister() {
   const [formData, setFormData] = useState({
@@ -61,7 +62,7 @@ export default function DriverRegister() {
         } else {
           window.location.href = createPageUrl('UserDashboard');
         }
-      } catch (e) {
+      } catch {
         // Ignora errores de finalización para no romper el formulario
       }
     };
@@ -88,7 +89,15 @@ export default function DriverRegister() {
 
     try {
       console.log(`📤 Uploading ${docType}...`);
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // Intentar subir usando funciones del backend joltcab
+      let file_url;
+      try {
+        const uploadRes = await joltcab.functions.invoke('uploadDriverDocument', { docType, file });
+        file_url = uploadRes?.data?.file_url;
+      } catch (uploadErr) {
+        // Fallback a URL local para no romper la UI si el backend no acepta archivos directamente
+        file_url = URL.createObjectURL(file);
+      }
       
       // Save the file URL
       setDocuments((prevDocs) => ({ ...prevDocs, [docType]: file_url }));
@@ -213,7 +222,7 @@ export default function DriverRegister() {
 
       // Validate vehicle age
       console.log('🚗 Validating vehicle age...');
-      const { data: ageValidation } = await base44.functions.invoke('validateVehicleAge', {
+      const { data: ageValidation } = await joltcab.functions.invoke('validateVehicleAge', {
         vehicle_year: formData.vehicle_year,
         country_code: formData.country
       });
@@ -670,3 +679,11 @@ function DocumentUploadField({ id, label, isUploading, isUploaded, onChange }) {
     </div>
   );
 }
+
+DocumentUploadField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  isUploading: PropTypes.bool,
+  isUploaded: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
+};

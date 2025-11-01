@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { joltcab } from '@/lib/joltcab-api';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -41,8 +41,9 @@ export default function GoogleCallback() {
       const user = await joltcab.auth.me();
       console.log('👤 User authenticated:', user);
 
-      // Verificar que sea admin
-      if (user.user_type !== 1) {
+      // Verificar que sea admin (compatibilidad con distintos esquemas)
+      const isAdmin = user?.role === 'admin' || user?.user_type === 1;
+      if (!isAdmin) {
         setStatus('error');
         setMessage('Access denied. Admin credentials required.');
         await joltcab.auth.logout();
