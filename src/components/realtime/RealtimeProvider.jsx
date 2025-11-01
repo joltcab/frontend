@@ -32,8 +32,12 @@ export function RealtimeProvider({ children }) {
         return;
       }
 
-      const user = await base44.auth.me();
-      if (!user) return;
+      // Evitar llamadas repetidas a /auth/me: sólo comprobamos si hay token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.warn('Realtime omitido: no hay token de sesión');
+        return;
+      }
 
       // Create WebSocket connection
       let wsUrl = WS_BASE_URL || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/realtime`;
@@ -55,8 +59,7 @@ export function RealtimeProvider({ children }) {
         // Send authentication
         websocket.send(JSON.stringify({
           type: 'auth',
-          token: localStorage.getItem('base44_token'),
-          user_email: user.email
+          token
         }));
       };
 
