@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { joltcab } from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 import Hero from "../components/landing/Hero";
@@ -432,7 +432,7 @@ const translations = {
 };
 
 export default function Home() {
-  const [language, setLanguage] = useState('en');
+  const [language] = useState('en');
   const [showAdminLink, setShowAdminLink] = useState(false);
 
   useEffect(() => {
@@ -441,11 +441,24 @@ export default function Home() {
 
   const checkAdmin = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const disableChecks = import.meta.env.VITE_DISABLE_BACKEND_AUTH_CHECK === 'true';
+      const isDev = import.meta.env.DEV === true;
+
+      // Evitar llamadas al backend en desarrollo sin sesión o si está deshabilitado
+      if (disableChecks || (!token && isDev)) {
+        return;
+      }
+
+      if (!token) {
+        return;
+      }
+
       const user = await joltcab.auth.me();
       if (user && user.role === 'admin') {
         setShowAdminLink(true);
       }
-    } catch (error) {
+    } catch {
       // Not logged in or not admin
     }
   };

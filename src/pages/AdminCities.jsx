@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,7 @@ export default function AdminCities() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCity, setEditingCity] = useState(null);
+  const [formError, setFormError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     full_name: "",
@@ -146,6 +147,18 @@ export default function AdminCities() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const missing = [];
+    if (!formData.name || !formData.name.trim()) missing.push('City Name');
+    if (!formData.country_id) missing.push('Country');
+
+    if (missing.length > 0) {
+      const message = `Please fill in required fields: ${missing.join(' and ')}`;
+      setFormError(message);
+      alert(message);
+      return;
+    }
+
+    setFormError(null);
     saveMutation.mutate(formData);
   };
 
@@ -241,7 +254,7 @@ export default function AdminCities() {
                 </TableHeader>
                 <TableBody>
                   {filteredCities.map((city) => {
-                    const country = countries.find(c => c.id === city.country_id);
+                    const country = countries.find(c => String(c.id || c._id) === String(city.country_id));
                     return (
                       <motion.tr
                         key={city.id}
@@ -353,6 +366,11 @@ export default function AdminCities() {
           </DialogHeader>
 
           <form onSubmit={handleSubmit}>
+            {formError && (
+              <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200">
+                {formError}
+              </div>
+            )}
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -612,7 +630,15 @@ export default function AdminCities() {
               <Button type="button" variant="outline" onClick={handleCloseDialog}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-[#15B46A]" disabled={saveMutation.isPending}>
+              <Button
+                type="submit"
+                className="bg-[#15B46A]"
+                disabled={
+                  saveMutation.isPending ||
+                  !formData.name?.trim() ||
+                  !formData.country_id
+                }
+              >
                 {saveMutation.isPending ? 'Saving...' : editingCity ? 'Update City' : 'Create City'}
               </Button>
             </DialogFooter>

@@ -1,16 +1,16 @@
 
-import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Radio, Edit, Trash2, Search, CheckCircle, XCircle, Clock, Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle, Clock, Edit, Plus, Radio, Search, Trash2, XCircle } from "lucide-react";
+import { useState } from "react";
 
 export default function DispatchersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -413,7 +413,7 @@ export default function DispatchersManagement() {
             <div className="text-center py-12 text-gray-500">
               <Radio className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p className="text-lg font-semibold mb-2">No dispatchers found</p>
-              <p className="text-sm">Click "Add Dispatcher" to create one</p>
+              <p className="text-sm">Click &ldquo;Add Dispatcher&rdquo; to create one</p>
             </div>
           ) : (
             <div className="space-y-4">

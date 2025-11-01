@@ -1,23 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { joltcab } from "@/lib/joltcab-api";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPageUrl } from "@/utils";
 
-export default function Header({ language, setLanguage }) {
+export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState(null);
   const [showServicesMenu, setShowServicesMenu] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Removed scroll state to address unused variable lint warning
 
   useEffect(() => {
     checkAuth();
@@ -25,9 +18,24 @@ export default function Header({ language, setLanguage }) {
 
   const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const disableChecks = import.meta.env.VITE_DISABLE_BACKEND_AUTH_CHECK === 'true';
+      const isDev = import.meta.env.DEV === true;
+
+      // Evitar llamadas al backend si no hay sesión o si está deshabilitado en dev
+      if (disableChecks || (!token && isDev)) {
+        setUser(null);
+        return;
+      }
+
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
       const userData = await joltcab.auth.me();
       setUser(userData);
-    } catch (error) {
+    } catch {
       setUser(null);
     }
   };

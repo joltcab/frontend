@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +24,20 @@ export default function Admin() {
 
   const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const disableChecks = import.meta.env.VITE_DISABLE_BACKEND_AUTH_CHECK === 'true';
+      const isDev = import.meta.env.DEV === true;
+
+      if (disableChecks || (!token && isDev)) {
+        setLoading(false);
+        return;
+      }
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       const user = await base44.auth.me();
       
       if (user && user.role === 'admin') {
@@ -37,7 +51,7 @@ export default function Admin() {
       } else {
         setLoading(false);
       }
-    } catch (error) {
+    } catch {
       setLoading(false);
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import {
   Users, Car, Briefcase, Hotel, Radio, ArrowRight, 
   ArrowLeft, Loader2, Eye, EyeOff, CheckCircle, Handshake 
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Register() {
   const [selectedRole, setSelectedRole] = useState(null);
@@ -33,11 +33,23 @@ export default function Register() {
 
   const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const disableChecks = import.meta.env.VITE_DISABLE_BACKEND_AUTH_CHECK === 'true';
+      const isDev = import.meta.env.DEV === true;
+
+      if (disableChecks || (!token && isDev)) {
+        return; // no sesión, no verificar backend en dev
+      }
+
+      if (!token) {
+        return;
+      }
+
       const user = await base44.auth.me();
       if (user) {
         redirectToDashboard(user.role);
       }
-    } catch (error) {
+    } catch {
       // Not logged in
     }
   };
@@ -469,7 +481,7 @@ export default function Register() {
 
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-xs text-gray-500 text-center">
-                By creating an account, you agree to JoltCab's{" "}
+                By creating an account, you agree to JoltCab&apos;s{" "}
                 <a href="#" className="text-[#15B46A] hover:underline">Terms of Service</a>
                 {" "}and{" "}
                 <a href="#" className="text-[#15B46A] hover:underline">Privacy Policy</a>

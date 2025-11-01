@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { joltcab } from "@/lib/joltcab-api";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -30,11 +30,23 @@ export default function AdminLogin() {
 
   const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const disableChecks = import.meta.env.VITE_DISABLE_BACKEND_AUTH_CHECK === 'true';
+      const isDev = import.meta.env.DEV === true;
+
+      if (disableChecks || (!token && isDev)) {
+        return;
+      }
+
+      if (!token) {
+        return;
+      }
+
       const user = await joltcab.auth.me();
       if (user && user.role === 'admin') {
         navigate('/AdminPanel');
       }
-    } catch (error) {
+    } catch {
       // No está logueado, continuar
     }
   };

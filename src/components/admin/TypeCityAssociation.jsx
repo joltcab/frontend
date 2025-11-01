@@ -1,14 +1,11 @@
 
-import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -16,8 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, Car, Save, Loader2, Plus, Trash2, Settings, Map } from "lucide-react";
-import ZoneDrawer from "../maps/ZoneDrawer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Building2, Car, Loader2, Map, Plus, Save, Settings, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+// ZoneDrawer import removed – unused
 import AIPricingToggle from "./AIPricingToggle";
 
 export default function TypeCityAssociation() {

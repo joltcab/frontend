@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Globe, Bell, Image, Save, Check, Loader2, Smartphone, Monitor, Rocket } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bell, Check, Globe, Image, Loader2, Monitor, Rocket, Save, Settings, Smartphone } from "lucide-react";
+import { useEffect, useState } from "react";
 import QuickSetupWizard from "./QuickSetupWizard";
 import SetupPrompt from "./SetupPrompt";
 
@@ -196,7 +196,7 @@ export default function BasicSettings() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Basic Settings</h2>
-          <p className="text-gray-600 mt-1">Configure your app's basic settings</p>
+          <p className="text-gray-600 mt-1">Configure your app&apos;s basic settings</p>
         </div>
         <div className="flex gap-2">
           <Button 

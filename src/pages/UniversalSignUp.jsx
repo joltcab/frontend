@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +30,18 @@ export default function UniversalSignUp() {
 
   const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const disableChecks = import.meta.env.VITE_DISABLE_BACKEND_AUTH_CHECK === 'true';
+      const isDev = import.meta.env.DEV === true;
+
+      if (disableChecks || (!token && isDev)) {
+        return;
+      }
+
+      if (!token) {
+        return;
+      }
+
       const user = await base44.auth.me();
       if (user) {
         const dashboards = {
@@ -43,7 +55,7 @@ export default function UniversalSignUp() {
         };
         window.location.href = createPageUrl(dashboards[user.role] || "UserDashboard");
       }
-    } catch (error) {
+    } catch {
       // Not logged in, continue
     }
   };
@@ -353,7 +365,7 @@ export default function UniversalSignUp() {
 
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-xs text-gray-500 text-center">
-                By creating an account, you agree to JoltCab's{" "}
+                By creating an account, you agree to JoltCab&apos;s{" "}
                 <a href="#" className="text-[#15B46A] hover:underline">Terms of Service</a>
                 {" "}and{" "}
                 <a href="#" className="text-[#15B46A] hover:underline">Privacy Policy</a>

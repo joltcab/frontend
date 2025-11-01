@@ -26,8 +26,9 @@ export function RealtimeProvider({ children }) {
 
   const connect = useCallback(async () => {
     try {
-      if (DISABLE_REALTIME || IS_LOCALHOST) {
-        console.warn("Realtime deshabilitado (VITE_DISABLE_REALTIME=true o entorno local)");
+      const IS_DEV = import.meta.env.DEV === true;
+      if (DISABLE_REALTIME || IS_LOCALHOST || IS_DEV) {
+        console.warn("Realtime deshabilitado (entorno dev/local o VITE_DISABLE_REALTIME=true)");
         return;
       }
 
@@ -101,7 +102,10 @@ export function RealtimeProvider({ children }) {
       };
 
       websocket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        // Reduce noise: only log the first few errors
+        if (reconnectAttempts < 3) {
+          console.error("WebSocket error:", error);
+        }
       };
 
       setWs(websocket);
