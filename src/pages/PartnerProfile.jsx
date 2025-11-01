@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ export default function PartnerProfile() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       
       if (userData.role !== 'partner') {
@@ -39,7 +39,7 @@ export default function PartnerProfile() {
         return;
       }
 
-      const profiles = await base44.entities.PartnerProfile.filter({
+  const profiles = await joltcab.entities.PartnerProfile.filter({
         user_email: userData.email
       });
       
@@ -66,8 +66,8 @@ export default function PartnerProfile() {
     mutationFn: async (data) => {
       if (!profile) throw new Error('Profile not found');
       
-      await base44.entities.PartnerProfile.update(profile.id, data);
-      await base44.auth.updateMe({
+  await joltcab.entities.PartnerProfile.update(profile.id, data);
+  await joltcab.auth.updateMe({
         full_name: `${data.first_name} ${data.last_name}`,
         phone: data.phone,
         city: data.city,

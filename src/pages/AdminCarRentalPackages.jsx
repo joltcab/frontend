@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,31 +58,31 @@ export default function AdminCarRentalPackages() {
   // Fetch data
   const { data: packages = [], isLoading } = useQuery({
     queryKey: ['car-rental-packages'],
-    queryFn: () => base44.entities.CarRentalPackage.list()
+  queryFn: () => joltcab.entities.CarRentalPackage.list()
   });
 
   const { data: priceConfigs = [] } = useQuery({
     queryKey: ['price-configurations'],
-    queryFn: () => base44.entities.PriceConfiguration.list()
+  queryFn: () => joltcab.entities.PriceConfiguration.list()
   });
 
   const { data: cities = [] } = useQuery({
     queryKey: ['cities'],
-    queryFn: () => base44.entities.City.list()
+  queryFn: () => joltcab.entities.City.list()
   });
 
   const { data: serviceTypes = [] } = useQuery({
     queryKey: ['service-types'],
-    queryFn: () => base44.entities.ServiceType.list()
+  queryFn: () => joltcab.entities.ServiceType.list()
   });
 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (editingPackage) {
-        return await base44.entities.CarRentalPackage.update(editingPackage.id, data);
+  return await joltcab.entities.CarRentalPackage.update(editingPackage.id, data);
       }
-      return await base44.entities.CarRentalPackage.create(data);
+  return await joltcab.entities.CarRentalPackage.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['car-rental-packages']);
@@ -96,7 +96,7 @@ export default function AdminCarRentalPackages() {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.CarRentalPackage.delete(id),
+  mutationFn: (id) => joltcab.entities.CarRentalPackage.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['car-rental-packages']);
       alert('Package deleted successfully!');

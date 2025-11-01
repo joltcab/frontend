@@ -1,11 +1,14 @@
 /**
- * Base44 Client Adapter
- * Reemplaza @base44/sdk con JoltCab API client
+ * JoltCab Client Adapter
+ * Punto único para importar la instancia de JoltCab
  */
-import joltcabAPI from '@/lib/joltcab-api';
+import joltcab from '@/lib/joltcab-api';
 
-// Export joltcabAPI como base44 para mantener compatibilidad
-export const base44 = joltcabAPI;
+// Export explícito de joltcab
+export { joltcab };
 
-// Export default también
-export default joltcabAPI;
+// Compatibilidad temporal: exportar alias base44 apuntando a joltcab
+export const base44 = joltcab;
+
+// Export default
+export default joltcab;

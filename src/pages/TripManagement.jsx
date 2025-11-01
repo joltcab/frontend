@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,7 @@ export default function TripManagement() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error('Error loading user:', error);
@@ -81,12 +81,12 @@ export default function TripManagement() {
     queryKey: ['trips', filters],
     queryFn: async () => {
       // Get all rides
-      const rides = await base44.entities.Ride.list();
+  const rides = await joltcab.entities.Ride.list();
       
       // Get users and drivers for joining
-      const users = await base44.entities.User.list();
-      const drivers = await base44.entities.DriverProfile.list();
-      const serviceTypes = await base44.entities.ServiceType.list();
+  const users = await joltcab.entities.User.list();
+  const drivers = await joltcab.entities.DriverProfile.list();
+  const serviceTypes = await joltcab.entities.ServiceType.list();
 
       // Merge data
       let trips = rides.map(ride => {
@@ -223,12 +223,12 @@ export default function TripManagement() {
   // Complete trip
   const completeTripMutation = useMutation({
     mutationFn: async ({ tripId }) => {
-      await base44.entities.Ride.update(tripId, {
+  await joltcab.entities.Ride.update(tripId, {
         status: 'completed'
       });
 
       // Process payment
-      await base44.functions.invoke('processPayment', {
+  await joltcab.functions.invoke('processPayment', {
         ride_id: tripId
       });
     },
@@ -241,7 +241,7 @@ export default function TripManagement() {
   // Cancel trip
   const cancelTripMutation = useMutation({
     mutationFn: async ({ tripId }) => {
-      const { data } = await base44.functions.invoke('cancelRide', {
+  const { data } = await joltcab.functions.invoke('cancelRide', {
         ride_id: tripId,
         cancelled_by: 'admin',
         reason: 'cancelled_by_admin'

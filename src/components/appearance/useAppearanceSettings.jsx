@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
+import appConfig from "@/config/app";
 
 export function useAppearanceSettings() {
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ['appearanceSettings'],
-    queryFn: () => base44.entities.AppearanceSettings.list(),
+    queryFn: () => joltcab.entities.AppearanceSettings.list(),
   });
 
   const headerSettings = settings.find(s => s.section === 'header') || {};
@@ -13,7 +14,7 @@ export function useAppearanceSettings() {
 
   return {
     header: {
-      logo_url: headerSettings.logo_url || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68f7eae9d9887c2ac98e6d49/870b77da3_LogoAppjolt26.png',
+      logo_url: headerSettings.logo_url || appConfig.logo,
       site_name: headerSettings.site_name || 'JoltCab',
       tagline: headerSettings.tagline || 'Your ride, your price',
       menu_items: headerSettings.menu_items || []

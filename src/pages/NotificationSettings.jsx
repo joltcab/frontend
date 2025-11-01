@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export default function NotificationSettings() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -32,13 +32,13 @@ export default function NotificationSettings() {
 
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ['notificationSettings', user?.email],
-    queryFn: () => base44.entities.NotificationSettings.filter({ user_email: user?.email }),
+  queryFn: () => joltcab.entities.NotificationSettings.filter({ user_email: user?.email }),
     enabled: !!user,
   });
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['allNotifications', user?.email],
-    queryFn: () => base44.entities.Notification.filter({ user_email: user?.email }, '-created_date'),
+  queryFn: () => joltcab.entities.Notification.filter({ user_email: user?.email }, '-created_date'),
     enabled: !!user,
   });
 
@@ -46,9 +46,9 @@ export default function NotificationSettings() {
     mutationFn: async ({ key, value }) => {
       const existing = settings.find(s => s.setting_key === key);
       if (existing) {
-        return base44.entities.NotificationSettings.update(existing.id, { enabled: value });
+  return joltcab.entities.NotificationSettings.update(existing.id, { enabled: value });
       } else {
-        return base44.entities.NotificationSettings.create({
+  return joltcab.entities.NotificationSettings.create({
           user_email: user.email,
           setting_key: key,
           enabled: value,
@@ -61,7 +61,7 @@ export default function NotificationSettings() {
   });
 
   const deleteNotificationMutation = useMutation({
-    mutationFn: (id) => base44.entities.Notification.delete(id),
+  mutationFn: (id) => joltcab.entities.Notification.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allNotifications'] });
     },
@@ -69,7 +69,7 @@ export default function NotificationSettings() {
 
   const clearAllMutation = useMutation({
     mutationFn: async () => {
-      await Promise.all(notifications.map(n => base44.entities.Notification.delete(n.id)));
+  await Promise.all(notifications.map(n => joltcab.entities.Notification.delete(n.id)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allNotifications'] });

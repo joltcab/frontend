@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export default function DispatcherLogin() {
         return;
       }
 
-      const user = await base44.auth.me();
+  const user = await joltcab.auth.me();
       
       if (user && user.role === 'dispatcher') {
         window.location.href = createPageUrl("DispatcherDashboard");
@@ -68,11 +68,11 @@ export default function DispatcherLogin() {
     setMessage({ type: '', text: '' });
 
     try {
-      await base44.auth.login(loginData.email, loginData.password);
-      const user = await base44.auth.me();
+  await joltcab.auth.login(loginData.email, loginData.password);
+  const user = await joltcab.auth.me();
       
       if (user.role !== 'dispatcher') {
-        await base44.auth.logout();
+  await joltcab.auth.logout();
         setMessage({ 
           type: 'error', 
           text: 'Access denied. Dispatcher privileges required.' 

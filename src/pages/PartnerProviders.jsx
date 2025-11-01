@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export default function PartnerProviders() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       
       if (userData.role !== 'partner') {
@@ -53,7 +53,7 @@ export default function PartnerProviders() {
         return;
       }
 
-      const profiles = await base44.entities.PartnerProfile.filter({
+  const profiles = await joltcab.entities.PartnerProfile.filter({
         user_email: userData.email
       });
       
@@ -69,7 +69,7 @@ export default function PartnerProviders() {
   const { data: drivers = [], isLoading } = useQuery({
     queryKey: ['partnerDrivers', user?.email],
     queryFn: async () => {
-      const allDrivers = await base44.entities.DriverProfile.filter({});
+  const allDrivers = await joltcab.entities.DriverProfile.filter({});
       return allDrivers.filter(d => d.partner_email === user?.email);
     },
     enabled: !!user,
@@ -79,7 +79,7 @@ export default function PartnerProviders() {
   const { data: ridesPerDriver = {} } = useQuery({
     queryKey: ['driverRides', drivers],
     queryFn: async () => {
-      const allRides = await base44.entities.Ride.filter({});
+  const allRides = await joltcab.entities.Ride.filter({});
       const ridesMap = {};
       
       drivers.forEach(driver => {
@@ -101,19 +101,19 @@ export default function PartnerProviders() {
   const removeDriverMutation = useMutation({
     mutationFn: async (driverEmail) => {
       // Update driver profile to remove partner association
-      const driverProfiles = await base44.entities.DriverProfile.filter({
+  const driverProfiles = await joltcab.entities.DriverProfile.filter({
         user_email: driverEmail
       });
       
       if (driverProfiles[0]) {
-        await base44.entities.DriverProfile.update(driverProfiles[0].id, {
+  await joltcab.entities.DriverProfile.update(driverProfiles[0].id, {
           partner_email: null
         });
       }
 
       // Update partner's total providers
       if (profile) {
-        await base44.entities.PartnerProfile.update(profile.id, {
+  await joltcab.entities.PartnerProfile.update(profile.id, {
           total_providers: Math.max(0, (profile.total_providers || 0) - 1)
         });
       }

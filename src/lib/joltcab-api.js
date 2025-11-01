@@ -813,5 +813,4 @@ export default joltcab;
 // Alias para compatibilidad con Base44
 if (typeof window !== 'undefined') {
   window.joltcab = joltcab;
-  window.base44 = joltcab; // Compatibilidad temporal
 }

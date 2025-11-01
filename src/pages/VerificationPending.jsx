@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ export default function VerificationPending() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -36,20 +36,20 @@ export default function VerificationPending() {
 
   const { data: verificationData } = useQuery({
     queryKey: ['verificationData', user?.email],
-    queryFn: () => base44.entities.VerificationData.filter({ user_email: user?.email }),
+  queryFn: () => joltcab.entities.VerificationData.filter({ user_email: user?.email }),
     enabled: !!user,
   });
 
   const { data: documents = [] } = useQuery({
     queryKey: ['documents', user?.email],
-    queryFn: () => base44.entities.Document.filter({ user_email: user?.email }),
+  queryFn: () => joltcab.entities.Document.filter({ user_email: user?.email }),
     enabled: !!user,
   });
 
   const { data: driverProfile } = useQuery({
     queryKey: ['driverProfile', user?.email],
     queryFn: async () => {
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: user?.email });
+  const profiles = await joltcab.entities.DriverProfile.filter({ user_email: user?.email });
       return profiles[0];
     },
     enabled: !!user && user.role === 'driver',

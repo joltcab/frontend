@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Loader2 } from "lucide-react";
 
 export default function Page() {
@@ -14,7 +14,7 @@ export default function Page() {
 
   const { data: pages = [], isLoading } = useQuery({
     queryKey: ['customPages'],
-    queryFn: () => base44.entities.CustomPage.filter({ status: 'published' }),
+  queryFn: () => joltcab.entities.CustomPage.filter({ status: 'published' }),
   });
 
   const page = pages.find(p => p.slug === slug || p.id === slug);

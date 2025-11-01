@@ -1,23 +1,23 @@
-import { base44 } from './base44Client';
+import joltcab from '@/lib/joltcab-api';
 
 
 
 
-export const Core = base44.integrations.Core;
+export const Core = joltcab.integrations?.Core;
 
-export const InvokeLLM = base44.integrations.Core.InvokeLLM;
+export const InvokeLLM = joltcab.integrations?.Core?.InvokeLLM;
 
-export const SendEmail = base44.integrations.Core.SendEmail;
+export const SendEmail = joltcab.integrations?.Core?.SendEmail;
 
-export const UploadFile = base44.integrations.Core.UploadFile;
+export const UploadFile = joltcab.integrations?.Core?.UploadFile;
 
-export const GenerateImage = base44.integrations.Core.GenerateImage;
+export const GenerateImage = joltcab.integrations?.Core?.GenerateImage;
 
-export const ExtractDataFromUploadedFile = base44.integrations.Core.ExtractDataFromUploadedFile;
+export const ExtractDataFromUploadedFile = joltcab.integrations?.Core?.ExtractDataFromUploadedFile;
 
-export const CreateFileSignedUrl = base44.integrations.Core.CreateFileSignedUrl;
+export const CreateFileSignedUrl = joltcab.integrations?.Core?.CreateFileSignedUrl;
 
-export const UploadPrivateFile = base44.integrations.Core.UploadPrivateFile;
+export const UploadPrivateFile = joltcab.integrations?.Core?.UploadPrivateFile;
 
 
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -17,12 +17,12 @@ export default function Events() {
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events'],
-    queryFn: () => base44.entities.Event.filter({ status: 'published' }, 'event_date'),
+  queryFn: () => joltcab.entities.Event.filter({ status: 'published' }, 'event_date'),
   });
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => base44.entities.Category.filter({ type: 'event' }),
+  queryFn: () => joltcab.entities.Category.filter({ type: 'event' }),
   });
 
   const now = moment();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,7 @@ export default function Wallet() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -38,10 +38,10 @@ export default function Wallet() {
   const { data: wallet } = useQuery({
     queryKey: ["wallet"],
     queryFn: async () => {
-      const wallets = await base44.entities.Wallet.filter({ user_email: user?.email });
+  const wallets = await joltcab.entities.Wallet.filter({ user_email: user?.email });
       if (wallets.length === 0) {
         // Create wallet if doesn't exist
-        const newWallet = await base44.entities.Wallet.create({
+  const newWallet = await joltcab.entities.Wallet.create({
           user_email: user?.email,
           balance: 0,
           currency: "USD",
@@ -55,7 +55,7 @@ export default function Wallet() {
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["transactions"],
-    queryFn: () => base44.entities.Transaction.filter({ user_email: user?.email }, "-created_date", 20),
+  queryFn: () => joltcab.entities.Transaction.filter({ user_email: user?.email }, "-created_date", 20),
     enabled: !!user,
   });
 
@@ -63,7 +63,7 @@ export default function Wallet() {
     mutationFn: async (amount) => {
       // TODO: Connect to your backend Stripe/PayPal integration
       // For now just creating a transaction record
-      await base44.entities.Transaction.create({
+  await joltcab.entities.Transaction.create({
         user_email: user?.email,
         type: "deposit",
         amount: parseFloat(amount),
@@ -75,7 +75,7 @@ export default function Wallet() {
 
       // Update wallet balance
       const currentWallet = wallet[0];
-      await base44.entities.Wallet.update(currentWallet.id, {
+  await joltcab.entities.Wallet.update(currentWallet.id, {
         balance: currentWallet.balance + parseFloat(amount),
       });
     },

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ export default function TrackRide() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -41,7 +41,7 @@ export default function TrackRide() {
   const { data: ride } = useQuery({
     queryKey: ['trackRide', rideId],
     queryFn: async () => {
-      const rides = await base44.entities.Ride.filter({ id: rideId });
+  const rides = await joltcab.entities.Ride.filter({ id: rideId });
       return rides[0];
     },
     enabled: !!rideId,
@@ -51,7 +51,7 @@ export default function TrackRide() {
   const { data: driverProfile } = useQuery({
     queryKey: ['trackDriverProfile', ride?.driver_email],
     queryFn: async () => {
-      const profiles = await base44.entities.DriverProfile.filter({ 
+  const profiles = await joltcab.entities.DriverProfile.filter({
         user_email: ride.driver_email 
       });
       return profiles[0];

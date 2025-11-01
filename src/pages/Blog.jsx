@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ export default function Blog() {
   const { data: posts = [], isLoading: postsLoading } = useQuery({
     queryKey: ['blogPosts'],
     queryFn: async () => {
-      const allPosts = await base44.entities.BlogPost.list('-created_date');
+  const allPosts = await joltcab.entities.BlogPost.list('-created_date');
       return allPosts.filter(post => post.status === 'published');
     },
   });
@@ -26,14 +26,14 @@ export default function Blog() {
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const allCategories = await base44.entities.Category.list();
+  const allCategories = await joltcab.entities.Category.list();
       return allCategories.filter(c => c.type === 'blog' || c.type === 'both');
     },
   });
 
   const { data: tags = [] } = useQuery({
     queryKey: ['tags'],
-    queryFn: () => base44.entities.Tag.list(),
+  queryFn: () => joltcab.entities.Tag.list(),
   });
 
   const filteredPosts = posts.filter(post => {

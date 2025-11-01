@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +38,7 @@ export default function Profile() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
       setFormData({
         full_name: userData.full_name || "",
@@ -65,7 +65,7 @@ export default function Profile() {
 
       // Upload image
       try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  const { file_url } = await joltcab.integrations?.Core?.UploadFile({ file });
         setFormData({ ...formData, profile_image: file_url });
       } catch (error) {
         console.error("Error uploading image:", error);
@@ -77,7 +77,7 @@ export default function Profile() {
 
   const updateMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.auth.updateMe(data);
+  return await joltcab.auth.updateMe(data);
     },
     onSuccess: () => {
       setShowSuccess(true);
@@ -93,7 +93,7 @@ export default function Profile() {
   // NEW: Change password mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.functions.invoke('changePassword', data);
+  return await joltcab.functions.invoke('changePassword', data);
     },
     onSuccess: (response) => {
       if (response.data.success) {

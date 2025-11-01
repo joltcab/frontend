@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,7 +55,7 @@ export default function VehicleDocuments() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -65,7 +65,7 @@ export default function VehicleDocuments() {
   const loadVehicle = async () => {
     if (!vehicleId) return;
     try {
-      const vehicles = await base44.entities.Vehicle.filter({ id: vehicleId });
+  const vehicles = await joltcab.entities.Vehicle.filter({ id: vehicleId });
       if (vehicles[0]) {
         setVehicle(vehicles[0]);
       }
@@ -77,7 +77,7 @@ export default function VehicleDocuments() {
   // Fetch documents
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ["vehicleDocuments", vehicleId],
-    queryFn: () => base44.entities.VehicleDocument.filter({ vehicle_id: vehicleId }),
+  queryFn: () => joltcab.entities.VehicleDocument.filter({ vehicle_id: vehicleId }),
     enabled: !!vehicleId,
   });
 
@@ -85,19 +85,19 @@ export default function VehicleDocuments() {
   const documentMutation = useMutation({
     mutationFn: async (documentData) => {
       if (editingDocument) {
-        return base44.entities.VehicleDocument.update(
+  return joltcab.entities.VehicleDocument.update(
           editingDocument.id,
           documentData
         );
       } else {
-        return base44.entities.VehicleDocument.create(documentData);
+  return joltcab.entities.VehicleDocument.create(documentData);
       }
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["vehicleDocuments"] });
       
       // Check if any documents are expired
-      const allDocs = await base44.entities.VehicleDocument.filter({
+  const allDocs = await joltcab.entities.VehicleDocument.filter({
         vehicle_id: vehicleId,
       });
       const hasExpired = allDocs.some(
@@ -105,7 +105,7 @@ export default function VehicleDocuments() {
       );
 
       // Update vehicle status
-      await base44.entities.Vehicle.update(vehicleId, {
+  await joltcab.entities.Vehicle.update(vehicleId, {
         has_expired_documents: hasExpired,
       });
 
@@ -117,7 +117,7 @@ export default function VehicleDocuments() {
 
   // Delete document mutation
   const deleteMutation = useMutation({
-    mutationFn: (documentId) => base44.entities.VehicleDocument.delete(documentId),
+  mutationFn: (documentId) => joltcab.entities.VehicleDocument.delete(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vehicleDocuments"] });
     },
@@ -129,7 +129,7 @@ export default function VehicleDocuments() {
 
     setUploadingFile(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  const { file_url } = await joltcab.integrations?.Core?.UploadFile({ file });
       setFilePreview(file_url);
     } catch (error) {
       console.error("Error uploading file:", error);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import joltcab from "@/lib/joltcab-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export default function DriverPayments() {
 
   const loadUser = async () => {
     try {
-      const userData = await base44.auth.me();
+  const userData = await joltcab.auth.me();
       setUser(userData);
     } catch (error) {
       console.error("Error loading user");
@@ -49,10 +49,10 @@ export default function DriverPayments() {
   const { data: wallet } = useQuery({
     queryKey: ["wallet", user?.email],
     queryFn: async () => {
-      const wallets = await base44.entities.Wallet.filter({ user_email: user.email });
+  const wallets = await joltcab.entities.Wallet.filter({ user_email: user.email });
       if (wallets[0]) return wallets[0];
       
-      return await base44.entities.Wallet.create({
+  return await joltcab.entities.Wallet.create({
         user_email: user.email,
         balance: 0,
         currency: "USD",
@@ -64,7 +64,7 @@ export default function DriverPayments() {
   // Fetch payment methods
   const { data: paymentMethods = [] } = useQuery({
     queryKey: ["paymentMethods", user?.email],
-    queryFn: () => base44.entities.PaymentMethod.filter({ user_email: user.email }),
+  queryFn: () => joltcab.entities.PaymentMethod.filter({ user_email: user.email }),
     enabled: !!user,
   });
 
@@ -72,7 +72,7 @@ export default function DriverPayments() {
   const { data: driverProfile } = useQuery({
     queryKey: ["driverProfile", user?.email],
     queryFn: async () => {
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: user.email });
+  const profiles = await joltcab.entities.DriverProfile.filter({ user_email: user.email });
       return profiles[0] || null;
     },
     enabled: !!user,
@@ -155,7 +155,7 @@ function WalletSection({ wallet, user }) {
 
   const addFundsMutation = useMutation({
     mutationFn: async (amount) => {
-      const { data } = await base44.functions.invoke("stripePaymentIntent", {
+  const { data } = await joltcab.functions.invoke("stripePaymentIntent", {
         amount: parseFloat(amount),
         currency: "usd",
         description: "Add funds to wallet",
@@ -163,9 +163,9 @@ function WalletSection({ wallet, user }) {
 
       if (data.success) {
         const newBalance = (wallet?.balance || 0) + parseFloat(amount);
-        await base44.entities.Wallet.update(wallet.id, { balance: newBalance });
+  await joltcab.entities.Wallet.update(wallet.id, { balance: newBalance });
 
-        await base44.entities.Transaction.create({
+  await joltcab.entities.Transaction.create({
           user_email: user.email,
           type: "deposit",
           amount: parseFloat(amount),
@@ -290,7 +290,7 @@ function WalletSection({ wallet, user }) {
 // ============================================
 function CardsSection({ paymentMethods, user, queryClient }) {
   const deleteMutation = useMutation({
-    mutationFn: (cardId) => base44.entities.PaymentMethod.delete(cardId),
+  mutationFn: (cardId) => joltcab.entities.PaymentMethod.delete(cardId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
     },
@@ -300,10 +300,10 @@ function CardsSection({ paymentMethods, user, queryClient }) {
     mutationFn: async (cardId) => {
       await Promise.all(
         paymentMethods.map((pm) =>
-          base44.entities.PaymentMethod.update(pm.id, { is_default: false })
+  joltcab.entities.PaymentMethod.update(pm.id, { is_default: false })
         )
       );
-      return base44.entities.PaymentMethod.update(cardId, { is_default: true });
+  return joltcab.entities.PaymentMethod.update(cardId, { is_default: true });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
@@ -398,9 +398,9 @@ function BankDetailsSection({ driverProfile, user, queryClient }) {
   const updateBankMutation = useMutation({
     mutationFn: async (data) => {
       if (driverProfile) {
-        return await base44.entities.DriverProfile.update(driverProfile.id, data);
+  return await joltcab.entities.DriverProfile.update(driverProfile.id, data);
       } else {
-        return await base44.entities.DriverProfile.create({
+  return await joltcab.entities.DriverProfile.create({
           user_email: user.email,
           ...data,
         });
@@ -520,7 +520,7 @@ function RecentTransactions({ userEmail }) {
   const { data: transactions = [], isLoading } = useQuery({
     queryKey: ["transactions", userEmail],
     queryFn: () =>
-      base44.entities.Transaction.filter(
+  joltcab.entities.Transaction.filter(
         { user_email: userEmail },
         "-created_date",
         10
